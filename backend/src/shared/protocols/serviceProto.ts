@@ -1,73 +1,337 @@
 import { ServiceProto } from 'tsrpc-proto';
-import { MsgChat } from './MsgChat';
-import { ReqSend, ResSend } from './PtlSend';
-
-// This is a demo service proto file (auto generated)
-// Feel free to delete it
+import { MsgClientToServer } from './MsgClientToServer';
+import { MsgServerToClient } from './MsgServerToClient';
 
 export interface ServiceType {
     api: {
-        "Send": {
-            req: ReqSend,
-            res: ResSend
-        }
+
     },
     msg: {
-        "Chat": MsgChat
+        "ClientToServer": MsgClientToServer,
+        "ServerToClient": MsgServerToClient
     }
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
+    "version": 7,
     "services": [
         {
-            "id": 0,
-            "name": "Chat",
+            "id": 9,
+            "name": "ClientToServer",
             "type": "msg"
         },
         {
-            "id": 1,
-            "name": "Send",
-            "type": "api"
+            "id": 10,
+            "name": "ServerToClient",
+            "type": "msg"
         }
     ],
     "types": {
-        "MsgChat/MsgChat": {
+        "MsgClientToServer/MsgClientToServer": {
+            "type": "Intersection",
+            "members": [
+                {
+                    "id": 0,
+                    "type": {
+                        "type": "Union",
+                        "members": [
+                            {
+                                "id": 0,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgClientToServer/CreateRoomReq"
+                                }
+                            },
+                            {
+                                "id": 1,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgClientToServer/JoinRandomRoomReq"
+                                }
+                            },
+                            {
+                                "id": 2,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgClientToServer/EnterRoomReq"
+                                }
+                            },
+                            {
+                                "id": 3,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgClientToServer/LeaveRoomReq"
+                                }
+                            },
+                            {
+                                "id": 4,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgClientToServer/OrderReq"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": 1,
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/BaseClientToServerMessage"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/CreateRoomReq": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "content",
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "CreateRoomReq"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/JoinRandomRoomReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "JoinRandomRoomReq"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/EnterRoomReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "EnterRoomReq"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "room_id",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/RoomId"
+                    }
+                }
+            ]
+        },
+        "model/RoomId": {
+            "type": "Intersection",
+            "members": [
+                {
+                    "id": 0,
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/NonEmptyString"
+                    }
+                },
+                {
+                    "id": 1,
+                    "type": {
+                        "type": "Interface",
+                        "properties": [
+                            {
+                                "id": 0,
+                                "name": "_",
+                                "type": {
+                                    "type": "Literal",
+                                    "literal": "RoomId"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "model/NonEmptyString": {
+            "type": "Intersection",
+            "members": [
+                {
+                    "id": 0,
                     "type": {
                         "type": "String"
                     }
                 },
                 {
                     "id": 1,
-                    "name": "time",
+                    "type": {
+                        "type": "Interface",
+                        "properties": [
+                            {
+                                "id": 0,
+                                "name": "_",
+                                "type": {
+                                    "type": "Literal",
+                                    "literal": "NonEmptyString"
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/LeaveRoomReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "LeaveRoomReq"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/OrderReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "OrderReq"
+                    }
+                }
+            ]
+        },
+        "model/BaseClientToServerMessage": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 1,
+                    "name": "user_id",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/UserId"
+                    }
+                },
+                {
+                    "id": 0,
+                    "name": "ts",
                     "type": {
                         "type": "Date"
                     }
                 }
             ]
         },
-        "PtlSend/ReqSend": {
-            "type": "Interface",
-            "properties": [
+        "model/UserId": {
+            "type": "Intersection",
+            "members": [
                 {
                     "id": 0,
-                    "name": "content",
                     "type": {
-                        "type": "String"
+                        "type": "Reference",
+                        "target": "model/NonEmptyString"
+                    }
+                },
+                {
+                    "id": 1,
+                    "type": {
+                        "type": "Interface",
+                        "properties": [
+                            {
+                                "id": 0,
+                                "name": "_",
+                                "type": {
+                                    "type": "Literal",
+                                    "literal": "UserId"
+                                }
+                            }
+                        ]
                     }
                 }
             ]
         },
-        "PtlSend/ResSend": {
+        "MsgServerToClient/MsgServerToClient": {
+            "type": "Intersection",
+            "members": [
+                {
+                    "id": 0,
+                    "type": {
+                        "type": "Union",
+                        "members": [
+                            {
+                                "id": 0,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgServerToClient/TickRes"
+                                }
+                            },
+                            {
+                                "id": 1,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgServerToClient/RoomDetailRes"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": 1,
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/BaseServerToClientMessage"
+                    }
+                }
+            ]
+        },
+        "MsgServerToClient/TickRes": {
             "type": "Interface",
             "properties": [
                 {
                     "id": 0,
-                    "name": "time",
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "TickRes"
+                    }
+                }
+            ]
+        },
+        "MsgServerToClient/RoomDetailRes": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "RoomDetailRes"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "room_id",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/RoomId"
+                    }
+                }
+            ]
+        },
+        "model/BaseServerToClientMessage": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "ts",
                     "type": {
                         "type": "Date"
                     }
