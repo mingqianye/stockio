@@ -11,15 +11,11 @@ export class ConnectionManager {
   _wsServer: WsServer<ServiceType> = new WsServer<ServiceType>(serviceProto, { port: 3000 });
 
   constructor(msgListener: MsgListener) {
-    this._setupListener(msgListener)
-    this._wsServer.start().catch(x => console.error(`Unable to start ConnectionManager ${x}`))
-  }
-
-  _setupListener(listener: MsgListener) {
     this._wsServer.listenMsg("ClientToServer", (call) => {
       this._connectionMap[call.msg.user_id] = call.conn as WsConnection
-      listener(call.msg)
+      msgListener(call.msg)
     })
+    this._wsServer.start().catch(x => console.error(`Unable to start ConnectionManager ${x}`))
   }
 
   async broadcast(outGoingMsg: OutGoingMsg) {

@@ -8,7 +8,7 @@ import { serviceProto } from './shared/protocols/serviceProto';
 
 
 // Entry function
-async function main() {
+function main() {
     const connectionManager = new ConnectionManager((msg) => console.log(msg))
 }
 main();
