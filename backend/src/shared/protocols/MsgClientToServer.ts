@@ -1,13 +1,13 @@
 import { BaseClientToServerMessage, RoomId, UserId } from "./model"
 
-export type MsgClientToServer = 
-(
+export type MsgClientToServer = Req & BaseClientToServerMessage
+
+export type Req = 
   | CreateRoomReq 
   | JoinRandomRoomReq
   | EnterRoomReq
   | LeaveRoomReq
   | OrderReq
-) & BaseClientToServerMessage
 
 export type CreateRoomReq = {
   kind: 'CreateRoomReq'
