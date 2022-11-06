@@ -1,0 +1,73 @@
+<view class="container">
+  <view class="userInfo-container">
+    <view class="userInfo-btn">
+      <view class="userInfo-nickName">
+        <open-data type="userNickName"></open-data>
+      </view>
+      <view class="userInfo-avatar">
+        <open-data type="userAvatarUrl" ></open-data>
+      </view>
+      <!-- 金币数量 -->
+      <!-- <view class="userInfo-detail">
+        <view class="userInfo-gold">
+          <image src="../../resources/images/index/gold.png"></image>
+          <view class="userInfo-gold-text">{{userInfo.gold}}</view>
+        </view>
+      </view> -->
+    </view>
+  </view>
+
+
+  <!-- 主按钮 -->
+  <view class="mainBtn">
+    <button class="commonBtnView btn-top" open-type="getUserInfo" bindgetuserinfo="goGame">
+      <view>
+        <view class="btnImg">
+          <image src="../../resources/images/index/stock.png" mode="aspectFit"></image>
+        </view>
+        <text>排位赛</text>
+      </view>
+    </button>
+  </view>
+
+  <!-- 次按钮 -->
+  <view class="subBtn">
+    <view class='commonBtnView subBtn-left' open-type="getUserInfo" bindgetuserinfo="goRank">
+      <view>
+        <view class="btnImg">
+          <image src="../../resources/images/index/rankCup.png" mode="aspectFit"></image>
+        </view>
+        <text>排行榜</text>
+      </view>
+    </view>
+
+    <view class='commonBtnView subBtn-right' open-type="getUserInfo" bindgetuserinfo="goNews">
+      <view>
+        <view class="btnImg">
+          <image src="../../resources/images/index/news.png" mode="aspectFit"></image>
+        </view>
+        <text>财经速报</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer-container">
+    <view class="footer">
+      <!-- 分享按钮 -->
+      <view class="footer-btn">
+        <button plain="true" open-type="share" bindtap='onShareAppMessage'>
+          <image src="../../resources/images/index/share_icon.png"  mode="aspectFit" ></image>
+        </button>
+      </view>
+      <!-- 联系我们 -->
+      <view class="footer-btn">
+        <image src="../../resources/images/index/contact_icon.png" mode="aspectFit" bindtap='goContactus'></image>
+      </view>
+      <!-- 投资我们 -->
+      <view class="footer-btn">
+        <image src="../../resources/images/index/investment_icon.png" mode="aspectFit" bindtap='goInvestment'></image>
+      </view>
+    </view>
+  </view>
+</view>
