@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 7,
+    "version": 9,
     "services": [
         {
             "id": 9,
@@ -31,46 +31,10 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Intersection",
             "members": [
                 {
-                    "id": 0,
+                    "id": 2,
                     "type": {
-                        "type": "Union",
-                        "members": [
-                            {
-                                "id": 0,
-                                "type": {
-                                    "type": "Reference",
-                                    "target": "MsgClientToServer/CreateRoomReq"
-                                }
-                            },
-                            {
-                                "id": 1,
-                                "type": {
-                                    "type": "Reference",
-                                    "target": "MsgClientToServer/JoinRandomRoomReq"
-                                }
-                            },
-                            {
-                                "id": 2,
-                                "type": {
-                                    "type": "Reference",
-                                    "target": "MsgClientToServer/EnterRoomReq"
-                                }
-                            },
-                            {
-                                "id": 3,
-                                "type": {
-                                    "type": "Reference",
-                                    "target": "MsgClientToServer/LeaveRoomReq"
-                                }
-                            },
-                            {
-                                "id": 4,
-                                "type": {
-                                    "type": "Reference",
-                                    "target": "MsgClientToServer/OrderReq"
-                                }
-                            }
-                        ]
+                        "type": "Reference",
+                        "target": "MsgClientToServer/Req"
                     }
                 },
                 {
@@ -78,6 +42,46 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Reference",
                         "target": "model/BaseClientToServerMessage"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/Req": {
+            "type": "Union",
+            "members": [
+                {
+                    "id": 0,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/CreateRoomReq"
+                    }
+                },
+                {
+                    "id": 1,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/JoinRandomRoomReq"
+                    }
+                },
+                {
+                    "id": 2,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/EnterRoomReq"
+                    }
+                },
+                {
+                    "id": 3,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/LeaveRoomReq"
+                    }
+                },
+                {
+                    "id": 4,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/OrderReq"
                     }
                 }
             ]
@@ -167,13 +171,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 1,
+                    "id": 2,
                     "type": {
                         "type": "Interface",
                         "properties": [
                             {
                                 "id": 0,
-                                "name": "_",
+                                "name": "basebrand_",
                                 "type": {
                                     "type": "Literal",
                                     "literal": "NonEmptyString"

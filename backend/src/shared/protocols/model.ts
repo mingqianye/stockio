@@ -28,9 +28,9 @@ export const UserId = (s: string) => NonEmptyString(s) as UserId
 
 export const Price = (n: number) => NonNegativeNumber(n) as Price
 
-export type NonEmptyString = string & {_: 'NonEmptyString'}
+export type NonEmptyString = string & {basebrand_: 'NonEmptyString'}
 
-export type NonNegativeNumber = number & {_: 'NonNegativeNumber'}
+export type NonNegativeNumber = number & {basebrand_: 'NonNegativeNumber'}
 
 export function NonEmptyString(s: string): NonEmptyString {
   if (!(s.length > 0)) {

@@ -4,11 +4,12 @@ import { MsgCall, WsServer } from "tsrpc";
 import { ConnectionManager, OutGoingMsg } from "./lib/connection";
 import { MsgClientToServer } from "./shared/protocols/MsgClientToServer";
 import { serviceProto } from './shared/protocols/serviceProto';
+import { RoomManager} from "./lib/room"
 
 
+const clientToServerSubject = new Subject<MsgClientToServer>()
+const outgoingSubject = new Subject<OutGoingMsg>()
+const connectionManager = new ConnectionManager(clientToServerSubject, outgoingSubject)
+const roomManager = new RoomManager(clientToServerSubject, outgoingSubject)
 
-// Entry function
-function main() {
-    const connectionManager = new ConnectionManager((msg) => console.log(msg))
-}
-main();
+connectionManager.start()
