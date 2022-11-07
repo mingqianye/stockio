@@ -1,6 +1,6 @@
 // index.ts
 // // 获取应用实例
-import { mockClient, StockioClient } from "../../client/client"
+import { create } from "../../client/client"
 import { RoomId, UserId } from "../../client/shared/protocols/model"
 import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
 
@@ -22,7 +22,7 @@ Page({
     })
   },
   onLoad() {
-    StockioClient.create({
+    create({
       userId: UserId("my user id"),
       onPongRes: (pong: PongRes) => console.log("pong ----->" + JSON.stringify(pong)),
       onTickRes: (tick: TickRes) => console.log(tick),
