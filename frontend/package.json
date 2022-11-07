@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "tsrpc-browser": "^3.4.8"
+    "tsrpc-browser": "^3.4.8",
+    "tsrpc-miniapp": "^3.4.8"
   },
   "devDependencies": {
     "@craco/craco": "^6.4.5",

@@ -1,4 +1,5 @@
-import { WsClient } from "tsrpc-browser";
+import { WsClient as BrowserWsClient } from "tsrpc-browser";
+import { WsClient as MiniappWsClient } from "tsrpc-miniapp";
 import { UserId } from "./shared/protocols/model";
 import { CreateRoomReq, JoinRandomRoomReq, Req } from "./shared/protocols/MsgClientToServer";
 import { TickRes, RoomDetailRes } from "./shared/protocols/MsgServerToClient";
@@ -11,10 +12,16 @@ export type ClientOpts = {
 }
 
 export class StockioClient {
-  _wsClient: WsClient<ServiceType> = new WsClient(serviceProto, {
+  // TODO: add support for h5
+  _wsClient = "__wxjs_environment" in window ?  // is mini app?
+    new MiniappWsClient(serviceProto, {
       server: "ws://127.0.0.1:3000",
       logger: console,
-  })
+    }) : 
+    new BrowserWsClient(serviceProto, {
+      server: "ws://127.0.0.1:3000",
+      logger: console,
+    })
 
   _userId: UserId
 

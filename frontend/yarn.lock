@@ -10776,6 +10776,13 @@ tsrpc-browser@^3.4.8:
     core-js "*"
     tsrpc-base-client "^2.1.10"
 
+tsrpc-miniapp@^3.4.8:
+  version "3.4.8"
+  resolved "https://registry.yarnpkg.com/tsrpc-miniapp/-/tsrpc-miniapp-3.4.8.tgz#0ce6066bad94341d8e0feda32dcdc4760559032e"
+  integrity sha512-vYFQCPP3dGsurEZyFqcVE69IKLa/qJyHuUf/yb8+q4HScOmwIw0+CQVUaX9kIbB1f6LHNqKiadlLvkhegR38wQ==
+  dependencies:
+    tsrpc-base-client "^2.1.10"
+
 tsrpc-proto@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/tsrpc-proto/-/tsrpc-proto-1.4.3.tgz#8db8fa43f0f6e97308bbc580be1c1de50acd8532"
