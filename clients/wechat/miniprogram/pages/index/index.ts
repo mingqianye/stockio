@@ -1,5 +1,9 @@
 // index.ts
 // 获取应用实例
+import { mockClient, StockioClient } from "../../client/client.js"
+import { RoomId, UserId } from "../../client/shared/protocols/model"
+import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
+
 const app = getApp<IAppOption>()
 
 Page({
@@ -18,6 +22,14 @@ Page({
     })
   },
   onLoad() {
+    StockioClient.create({
+      userId: UserId("my user id"),
+      onPongRes: (pong: PongRes) => console.log("pong ----->" + JSON.stringify(pong)),
+      onTickRes: (tick: TickRes) => console.log(tick),
+      onRoomDetailRes: (rd: RoomDetailRes) => console.log(rd)
+    }).then(
+      c => c.sendReq({kind: "PingReq"})
+    )
     // @ts-ignore
     if (wx.getUserProfile) {
       this.setData({
