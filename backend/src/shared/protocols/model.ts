@@ -14,25 +14,25 @@ export type AmountPrice = {
   price: Price
 }
 
-export type RoomId = NonEmptyString & {_: 'RoomId'}
+export type RoomId = NonEmptyString
 
-export type UserId = NonEmptyString & {_: 'UserId'}
+export type UserId = NonEmptyString
 
-export type Price = NonNegativeNumber & {_: 'Price'}
+export type Price = NonNegativeNumber
 
-export type Amount = NonNegativeNumber & {_: 'Amount'}
+export type Amount = NonNegativeNumber
 
-export type GameClock = NonNegativeNumber & {_: 'GameClock'}
+export type GameClock = NonNegativeNumber
 
-export const RoomId = (s: string) => NonEmptyString(s) as RoomId
+export const RoomId = (s: string) => NonEmptyString(s)
 
-export const UserId = (s: string) => NonEmptyString(s) as UserId
+export const UserId = (s: string) => NonEmptyString(s)
 
-export const Price = (n: number) => NonNegativeNumber(n) as Price
+export const Price = (n: number) => NonNegativeNumber(n)
 
-export type NonEmptyString = string & {basebrand_: 'NonEmptyString'}
+export type NonEmptyString = string
 
-export type NonNegativeNumber = number & {basebrand_: 'NonNegativeNumber'}
+export type NonNegativeNumber = number
 
 export function NonEmptyString(s: string): NonEmptyString {
   if (!(s.length > 0)) {

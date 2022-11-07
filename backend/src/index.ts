@@ -8,7 +8,7 @@ import { RequestResolver} from "./lib/room"
 const clientToServerSubject = new Subject<MsgClientToServer>()
 const outgoingSubject = new Subject<OutGoingMsg>()
 
-const connectionManager = new ConnectionManager(clientToServerSubject, outgoingSubject)
-const requestResolver = new RequestResolver(clientToServerSubject, outgoingSubject)
-
-connectionManager.start()
+//const requestResolver = new RequestResolver(clientToServerSubject, outgoingSubject)
+ConnectionManager.createAndStart(clientToServerSubject, outgoingSubject)
+  .then(_ => new RequestResolver(clientToServerSubject, outgoingSubject))
+  .catch(console.error)

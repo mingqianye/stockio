@@ -11,12 +11,14 @@ export class ConnectionManager {
   _connectionMap: ConnectionMap = {};
   _wsServer: WsServer<ServiceType> = new WsServer<ServiceType>(serviceProto, { port: 3000 });
 
-  constructor(reqObserver: Observer<MsgClientToServer>, resObservable: Observable<OutGoingMsg>) {
-    this._wsServer.listenMsg("ClientToServer", (call) => {
-      this._connectionMap[call.msg.user_id] = call.conn as WsConnection
+  static async createAndStart(reqObserver: Observer<MsgClientToServer>, resObservable: Observable<OutGoingMsg>) {
+    const cm = new ConnectionManager()
+    await cm._wsServer.start()
+    cm._wsServer.listenMsg("ClientToServer", (call) => {
+      cm._connectionMap[call.msg.user_id] = call.conn as WsConnection
       reqObserver.next(call.msg)
     })
-    resObservable.subscribe(this.broadcast)
+    resObservable.subscribe(value => cm.broadcast(value))
   }
 
   broadcast(outGoingMsg: OutGoingMsg): void {
@@ -26,10 +28,6 @@ export class ConnectionManager {
         console.error(x.errMsg)
       })
       .catch(ex => console.error(ex))
-  }
-
-  start(): void {
-    this._wsServer.start().catch(x => console.error(`Unable to start ConnectionManager ${x}`))
   }
 }
 

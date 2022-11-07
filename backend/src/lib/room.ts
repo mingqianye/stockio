@@ -25,6 +25,7 @@ export class RequestResolver {
             ts: new Date()
           }
         })
+        break;
       case "CreateRoomReq":
         this._addRoom(outgoingMsgObserver).addUser(msg.user_id)
         break;

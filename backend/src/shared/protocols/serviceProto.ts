@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 10,
+    "version": 12,
     "services": [
         {
             "id": 9,
@@ -154,59 +154,11 @@ export const serviceProto: ServiceProto<ServiceType> = {
             ]
         },
         "model/RoomId": {
-            "type": "Intersection",
-            "members": [
-                {
-                    "id": 0,
-                    "type": {
-                        "type": "Reference",
-                        "target": "model/NonEmptyString"
-                    }
-                },
-                {
-                    "id": 1,
-                    "type": {
-                        "type": "Interface",
-                        "properties": [
-                            {
-                                "id": 0,
-                                "name": "_",
-                                "type": {
-                                    "type": "Literal",
-                                    "literal": "RoomId"
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
+            "type": "Reference",
+            "target": "model/NonEmptyString"
         },
         "model/NonEmptyString": {
-            "type": "Intersection",
-            "members": [
-                {
-                    "id": 0,
-                    "type": {
-                        "type": "String"
-                    }
-                },
-                {
-                    "id": 2,
-                    "type": {
-                        "type": "Interface",
-                        "properties": [
-                            {
-                                "id": 0,
-                                "name": "basebrand_",
-                                "type": {
-                                    "type": "Literal",
-                                    "literal": "NonEmptyString"
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
+            "type": "String"
         },
         "MsgClientToServer/LeaveRoomReq": {
             "type": "Interface",
@@ -255,32 +207,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
             ]
         },
         "model/UserId": {
-            "type": "Intersection",
-            "members": [
-                {
-                    "id": 0,
-                    "type": {
-                        "type": "Reference",
-                        "target": "model/NonEmptyString"
-                    }
-                },
-                {
-                    "id": 1,
-                    "type": {
-                        "type": "Interface",
-                        "properties": [
-                            {
-                                "id": 0,
-                                "name": "_",
-                                "type": {
-                                    "type": "Literal",
-                                    "literal": "UserId"
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
+            "type": "Reference",
+            "target": "model/NonEmptyString"
         },
         "MsgServerToClient/MsgServerToClient": {
             "type": "Intersection",

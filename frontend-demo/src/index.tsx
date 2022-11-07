@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { mockClient } from './getClient';
+import { mockClient } from 'frontend'
 
 const App = () => <div className='App'>
     <h1>TSRPC Chatroom</h1>
@@ -7,4 +7,6 @@ const App = () => <div className='App'>
 
 ReactDOM.render(<App />, document.getElementById('app'));
 
-console.log(mockClient())
+mockClient()
+  .then(c => c.sendReq({kind: "PingReq"}))
+  .catch(console.error)
