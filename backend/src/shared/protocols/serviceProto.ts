@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 9,
+    "version": 10,
     "services": [
         {
             "id": 9,
@@ -50,6 +50,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Union",
             "members": [
                 {
+                    "id": 5,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/PingReq"
+                    }
+                },
+                {
                     "id": 0,
                     "type": {
                         "type": "Reference",
@@ -82,6 +89,19 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Reference",
                         "target": "MsgClientToServer/OrderReq"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/PingReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "PingReq"
                     }
                 }
             ]
@@ -266,7 +286,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Intersection",
             "members": [
                 {
-                    "id": 0,
+                    "id": 2,
                     "type": {
                         "type": "Union",
                         "members": [
@@ -274,11 +294,18 @@ export const serviceProto: ServiceProto<ServiceType> = {
                                 "id": 0,
                                 "type": {
                                     "type": "Reference",
-                                    "target": "MsgServerToClient/TickRes"
+                                    "target": "MsgServerToClient/PongRes"
                                 }
                             },
                             {
                                 "id": 1,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgServerToClient/TickRes"
+                                }
+                            },
+                            {
+                                "id": 2,
                                 "type": {
                                     "type": "Reference",
                                     "target": "MsgServerToClient/RoomDetailRes"
@@ -292,6 +319,19 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Reference",
                         "target": "model/BaseServerToClientMessage"
+                    }
+                }
+            ]
+        },
+        "MsgServerToClient/PongRes": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "PongRes"
                     }
                 }
             ]

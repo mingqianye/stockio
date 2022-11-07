@@ -6,7 +6,7 @@ import { MsgClientToServer } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
 import { RoomDetailRes } from "../shared/protocols/MsgServerToClient";
 
-export class RoomManager {
+export class RequestResolver {
   _reqObservable: Observable<MsgClientToServer>
   _outgoingMsgObserver: Observer<OutGoingMsg>
   _roomMap: Record<RoomId, Room> = {}
@@ -17,6 +17,14 @@ export class RoomManager {
 
     this._reqObservable.subscribe(msg => {
       switch(msg.kind) {
+      case "PingReq":
+        outgoingMsgObserver.next({
+          user_ids: [msg.user_id],
+          msg: {
+            kind: "PongRes",
+            ts: new Date()
+          }
+        })
       case "CreateRoomReq":
         this._addRoom(outgoingMsgObserver).addUser(msg.user_id)
         break;

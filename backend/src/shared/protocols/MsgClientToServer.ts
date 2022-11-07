@@ -3,11 +3,16 @@ import { BaseClientToServerMessage, RoomId, UserId } from "./model"
 export type MsgClientToServer = Req & BaseClientToServerMessage
 
 export type Req = 
+  | PingReq
   | CreateRoomReq 
   | JoinRandomRoomReq
   | EnterRoomReq
   | LeaveRoomReq
   | OrderReq
+
+export type PingReq = {
+  kind: 'PingReq'
+}
 
 export type CreateRoomReq = {
   kind: 'CreateRoomReq'
