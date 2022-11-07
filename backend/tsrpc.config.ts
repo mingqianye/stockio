@@ -17,8 +17,13 @@ export default <TsrpcConfig>{
         {
             from: 'src/shared',
             to: '../clients/wechat/miniprogram/client/shared',
+            type: 'copy'
+        },
+        {
+            from: 'src/shared',
+            to: '../frontend-demo/src/shared',
             type: 'copy'     // Change this to 'copy' if your environment not support symlink
-        }
+        },
     ],
     // Dev server
     dev: {

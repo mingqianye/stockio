@@ -28,6 +28,7 @@
     "rxjs": "^7.5.7",
     "ts-pattern": "^4.0.5",
     "tsrpc": "^3.4.8",
+    "tsrpc-base-client": "^2.1.10",
     "uuid": "^9.0.0"
   }
 }
