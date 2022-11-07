@@ -1,6 +1,6 @@
 // index.ts
-// 获取应用实例
-import { mockClient, StockioClient } from "../../client/client.js"
+// // 获取应用实例
+import { mockClient, StockioClient } from "../../client/client"
 import { RoomId, UserId } from "../../client/shared/protocols/model"
 import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
 
