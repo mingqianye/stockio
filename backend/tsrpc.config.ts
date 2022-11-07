@@ -21,7 +21,7 @@ export default <TsrpcConfig>{
         },
         {
             from: 'src/shared',
-            to: '../frontend-demo/src/shared',
+            to: '../clients/frontend-demo/src/shared',
             type: 'copy'     // Change this to 'copy' if your environment not support symlink
         },
     ],
