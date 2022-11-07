@@ -16,7 +16,7 @@ export default <TsrpcConfig>{
     sync: [
         {
             from: 'src/shared',
-            to: '../clients/wechat/miniprogram/shared',
+            to: '../clients/wechat/miniprogram/client/shared',
             type: 'copy'     // Change this to 'copy' if your environment not support symlink
         }
     ],
