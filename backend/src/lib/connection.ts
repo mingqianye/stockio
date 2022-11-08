@@ -10,15 +10,26 @@ import { serviceProto, ServiceType } from "../shared/protocols/serviceProto"
 export class ConnectionManager {
   _connectionMap: ConnectionMap = {};
   _wsServer: WsServer<ServiceType> = new WsServer<ServiceType>(serviceProto, { port: 3000 });
+  _reqObserver: Observer<MsgClientToServer>
+  _resObservable: Observable<OutGoingMsg>
+
+  private constructor(reqObserver: Observer<MsgClientToServer>, resObservable: Observable<OutGoingMsg>) {
+    this._reqObserver = reqObserver
+    this._resObservable = resObservable
+  }
 
   static async createAndStart(reqObserver: Observer<MsgClientToServer>, resObservable: Observable<OutGoingMsg>) {
-    const cm = new ConnectionManager()
-    await cm._wsServer.start()
-    cm._wsServer.listenMsg("ClientToServer", (call) => {
-      cm._connectionMap[call.msg.user_id] = call.conn as WsConnection
-      reqObserver.next(call.msg)
+    const cm = new ConnectionManager(reqObserver, resObservable)
+    return await cm.connect()
+  }
+
+  async connect() {
+    await this._wsServer.start()
+    this._wsServer.listenMsg("ClientToServer", (call) => {
+      this._connectionMap[call.msg.user_id] = call.conn as WsConnection
+      this._reqObserver.next(call.msg)
     })
-    resObservable.subscribe(value => cm.broadcast(value))
+    this._resObservable.subscribe(value => this.broadcast(value))
   }
 
   broadcast(outGoingMsg: OutGoingMsg): void {

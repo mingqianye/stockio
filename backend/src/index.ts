@@ -1,14 +1,11 @@
-import * as path from "path";
 import { Subject } from "rxjs";
-import { ConnectionManager, OutGoingMsg } from "./lib/connection";
+import { ConnectionManager } from "./lib/connection";
 import { MsgClientToServer } from "./shared/protocols/MsgClientToServer";
-import { RequestResolver} from "./lib/room"
+import { RequestResolver} from "./lib/resolver"
 
 
 const clientToServerSubject = new Subject<MsgClientToServer>()
-const outgoingSubject = new Subject<OutGoingMsg>()
+const outgoingStream = new RequestResolver(clientToServerSubject).outgoingStream
 
-//const requestResolver = new RequestResolver(clientToServerSubject, outgoingSubject)
-ConnectionManager.createAndStart(clientToServerSubject, outgoingSubject)
-  .then(_ => new RequestResolver(clientToServerSubject, outgoingSubject))
+ConnectionManager.createAndStart(clientToServerSubject, outgoingStream)
   .catch(console.error)

@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 12,
+    "version": 13,
     "services": [
         {
             "id": 9,
@@ -214,7 +214,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Intersection",
             "members": [
                 {
-                    "id": 2,
+                    "id": 3,
                     "type": {
                         "type": "Union",
                         "members": [
@@ -229,11 +229,18 @@ export const serviceProto: ServiceProto<ServiceType> = {
                                 "id": 1,
                                 "type": {
                                     "type": "Reference",
-                                    "target": "MsgServerToClient/TickRes"
+                                    "target": "MsgServerToClient/ServerErrorRes"
                                 }
                             },
                             {
                                 "id": 2,
+                                "type": {
+                                    "type": "Reference",
+                                    "target": "MsgServerToClient/TickRes"
+                                }
+                            },
+                            {
+                                "id": 3,
                                 "type": {
                                     "type": "Reference",
                                     "target": "MsgServerToClient/RoomDetailRes"
@@ -260,6 +267,26 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Literal",
                         "literal": "PongRes"
+                    }
+                }
+            ]
+        },
+        "MsgServerToClient/ServerErrorRes": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "ServerErrorRes"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "error",
+                    "type": {
+                        "type": "String"
                     }
                 }
             ]
