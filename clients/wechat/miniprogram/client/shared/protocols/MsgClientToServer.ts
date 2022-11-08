@@ -29,6 +29,7 @@ export type EnterRoomReq = {
 
 export type LeaveRoomReq = {
   kind: 'LeaveRoomReq'
+  room_id: RoomId
 }
 
 export type OrderReq = {

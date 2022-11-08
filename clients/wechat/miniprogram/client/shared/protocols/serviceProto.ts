@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 13,
+    "version": 14,
     "services": [
         {
             "id": 9,
@@ -169,6 +169,14 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Literal",
                         "literal": "LeaveRoomReq"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "room_id",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/RoomId"
                     }
                 }
             ]
