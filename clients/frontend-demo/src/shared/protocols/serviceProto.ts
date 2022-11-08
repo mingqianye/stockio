@@ -299,8 +299,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 2,
-                    "name": "users",
+                    "id": 3,
+                    "name": "user_ids",
                     "type": {
                         "type": "Array",
                         "elementType": {

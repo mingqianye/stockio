@@ -22,7 +22,7 @@ export type ServerErrorRes = {
 export type RoomDetailRes = {
   kind: 'RoomDetailRes'
   room_id: RoomId
-  users: UserId[]
+  user_ids: UserId[]
 }
 // [END] Room response
 

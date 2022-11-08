@@ -69,7 +69,7 @@ class Room {
       msg: {
         kind: "RoomDetailRes",
         room_id: this.id,
-        users: [...this._user_ids],
+        user_ids: [...this._user_ids],
         ts: new Date()
       }
     }
