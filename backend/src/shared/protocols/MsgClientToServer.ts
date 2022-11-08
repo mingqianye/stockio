@@ -1,4 +1,4 @@
-import { BaseClientToServerMessage, RoomId, UserId } from "./model"
+import { RoomId, UserId } from "./model"
 
 export type MsgClientToServer = Req & BaseClientToServerMessage
 
@@ -16,7 +16,7 @@ export type PingReq = {
 }
 // [END] Utility responses
 
-// [START] Room related requests
+// [START] Room requests
 export type CreateRoomReq = {
   kind: 'CreateRoomReq'
 }
@@ -34,8 +34,13 @@ export type LeaveRoomReq = {
   kind: 'LeaveRoomReq'
   room_id: RoomId
 }
-// [END] Room related requests
+// [END] Room requests
 
 export type OrderReq = {
   kind: 'OrderReq'
+}
+
+export type BaseClientToServerMessage = {
+  user_id: UserId
+  ts: Date
 }

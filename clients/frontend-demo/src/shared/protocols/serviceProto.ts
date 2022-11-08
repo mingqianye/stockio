@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 15,
+    "version": 16,
     "services": [
         {
             "id": 9,
@@ -38,10 +38,10 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 1,
+                    "id": 3,
                     "type": {
                         "type": "Reference",
-                        "target": "model/BaseClientToServerMessage"
+                        "target": "MsgClientToServer/BaseClientToServerMessage"
                     }
                 }
             ]
@@ -194,11 +194,11 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "model/BaseClientToServerMessage": {
+        "MsgClientToServer/BaseClientToServerMessage": {
             "type": "Interface",
             "properties": [
                 {
-                    "id": 1,
+                    "id": 0,
                     "name": "user_id",
                     "type": {
                         "type": "Reference",
@@ -206,7 +206,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 0,
+                    "id": 1,
                     "name": "ts",
                     "type": {
                         "type": "Date"
@@ -258,10 +258,10 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 1,
+                    "id": 5,
                     "type": {
                         "type": "Reference",
-                        "target": "model/BaseServerToClientMessage"
+                        "target": "MsgServerToClient/BaseServerToClientMessage"
                     }
                 }
             ]
@@ -344,7 +344,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "model/BaseServerToClientMessage": {
+        "MsgServerToClient/BaseServerToClientMessage": {
             "type": "Interface",
             "properties": [
                 {

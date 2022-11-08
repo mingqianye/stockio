@@ -1,14 +1,5 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 
-export type BaseClientToServerMessage = {
-  user_id: UserId
-  ts: Date
-}
-
-export type BaseServerToClientMessage = {
-  ts: Date
-}
-
 export type AmountPrice = {
   amount: Amount
   price: Price
