@@ -36,6 +36,8 @@ export class StockioClient {
         throw new Error(`Unhandled ServerToClient message type: ${JSON.stringify(msg)}`)
       }
     })
+    // send heartbeat every 10s
+    //setInterval(() => this.sendReq({kind: 'PingReq'}).catch(console.error), 10000)
     return this
   }
 

@@ -10,9 +10,11 @@ export type Req =
   | LeaveRoomReq
   | OrderReq
 
+// [START] Utility responses
 export type PingReq = {
   kind: 'PingReq'
 }
+// [END] Utility responses
 
 // [START] Room related requests
 export type CreateRoomReq = {

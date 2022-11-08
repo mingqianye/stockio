@@ -222,7 +222,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Intersection",
             "members": [
                 {
-                    "id": 3,
+                    "id": 4,
                     "type": {
                         "type": "Union",
                         "members": [
@@ -237,21 +237,21 @@ export const serviceProto: ServiceProto<ServiceType> = {
                                 "id": 1,
                                 "type": {
                                     "type": "Reference",
-                                    "target": "MsgServerToClient/ServerErrorRes"
+                                    "target": "MsgServerToClient/RoomDetailRes"
                                 }
                             },
                             {
                                 "id": 2,
                                 "type": {
                                     "type": "Reference",
-                                    "target": "MsgServerToClient/TickRes"
+                                    "target": "MsgServerToClient/ServerErrorRes"
                                 }
                             },
                             {
                                 "id": 3,
                                 "type": {
                                     "type": "Reference",
-                                    "target": "MsgServerToClient/RoomDetailRes"
+                                    "target": "MsgServerToClient/TickRes"
                                 }
                             }
                         ]
@@ -275,6 +275,38 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Literal",
                         "literal": "PongRes"
+                    }
+                }
+            ]
+        },
+        "MsgServerToClient/RoomDetailRes": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "RoomDetailRes"
+                    }
+                },
+                {
+                    "id": 1,
+                    "name": "room_id",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/RoomId"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "users",
+                    "type": {
+                        "type": "Array",
+                        "elementType": {
+                            "type": "Reference",
+                            "target": "model/UserId"
+                        }
                     }
                 }
             ]
@@ -308,38 +340,6 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Literal",
                         "literal": "TickRes"
-                    }
-                }
-            ]
-        },
-        "MsgServerToClient/RoomDetailRes": {
-            "type": "Interface",
-            "properties": [
-                {
-                    "id": 0,
-                    "name": "kind",
-                    "type": {
-                        "type": "Literal",
-                        "literal": "RoomDetailRes"
-                    }
-                },
-                {
-                    "id": 1,
-                    "name": "room_id",
-                    "type": {
-                        "type": "Reference",
-                        "target": "model/RoomId"
-                    }
-                },
-                {
-                    "id": 2,
-                    "name": "users",
-                    "type": {
-                        "type": "Array",
-                        "elementType": {
-                            "type": "Reference",
-                            "target": "model/UserId"
-                        }
                     }
                 }
             ]
