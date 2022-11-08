@@ -5,9 +5,57 @@ import { MsgClientToServer } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
 import { match, P } from "ts-pattern";
 
-const roomMap: Record<RoomId, Room> = {}
+class State {
+  _roomMap: Record<RoomId, Room> = {}
 
-export const resolve = (reqObservable: Observable<MsgClientToServer>) => 
+  createRoom(uid: UserId): Room {
+    const room = {
+      id: RoomId(uuid().slice(0, 5)),
+      user_ids: new Set<UserId>().add(uid)
+    }
+    this._roomMap[room.id] = room
+    return room
+  }
+
+  enterRoom(uid: UserId, roomId: RoomId): Room {
+    this._roomMap[roomId].user_ids.add(uid)
+    return this._roomMap[roomId]
+  }
+
+  enterRandomRoom(uid: UserId): Room {
+    const room = Object.values(this._roomMap)[0]
+    room.user_ids.add(uid)
+    return room
+  }
+
+  leaveRoom(uid: UserId, roomId: RoomId): Room {
+    const room = this._roomMap[roomId]
+    room.user_ids.delete(uid)
+    return room
+  }
+
+}
+
+const state = new State()
+
+type Room = {
+  id: RoomId
+  user_ids: Set<UserId>
+}
+
+function roomDetailRes(room: Room): OutGoingMsg {
+  return {
+    user_ids: [...room.user_ids],
+    msg: {
+      kind: "RoomDetailRes",
+      room_id: room.id,
+      user_ids: [...room.user_ids],
+      ts: new Date()
+    }
+  }
+}
+
+export const resolve = (reqObservable: Observable<MsgClientToServer>) =>
   reqObservable.pipe(
     map(translate),
     mergeMap(x => toArray<OutGoingMsg>(x)),
@@ -15,12 +63,18 @@ export const resolve = (reqObservable: Observable<MsgClientToServer>) =>
 
 const translate = (req: MsgClientToServer) =>
   match(req)
-    .with({kind: "PingReq"}, () => [pongRes(req.user_id)])
-    .with({kind: "CreateRoomReq"}, () => addRoom().addUser(req.user_id).roomDetailRes())
-    .with({kind: "EnterRoomReq", room_id: P.select()}, (roomId) => roomMap[roomId].addUser(req.user_id).roomDetailRes())
-    .with({kind: "JoinRandomRoomReq"}, () => Object.values(roomMap)[0].addUser(req.user_id).roomDetailRes())
-    .with({kind: "LeaveRoomReq", room_id: P.select()}, (roomId) => roomMap[roomId].removeUser(req.user_id).roomDetailRes())
-    .with({kind: "OrderReq"}, () => serverErrorRes(req.user_id, "Not implemented"))
+    .with({ kind: "PingReq" },
+      () => pongRes(req.user_id))
+    .with({ kind: "CreateRoomReq" },
+      () => roomDetailRes(state.createRoom(req.user_id)))
+    .with({ kind: "EnterRoomReq", room_id: P.select() },
+      (roomId) => roomDetailRes(state.enterRoom(req.user_id, roomId)))
+    .with({ kind: "EnterRandomRoomReq" },
+      () => roomDetailRes(state.enterRandomRoom(req.user_id)))
+    .with({ kind: "LeaveRoomReq", room_id: P.select() }, 
+      (roomId) => roomDetailRes(state.leaveRoom(req.user_id, roomId)))
+    .with({ kind: "OrderReq" }, 
+      () => serverErrorRes(req.user_id, "Not implemented"))
     .exhaustive()
 
 const pongRes = (uid: UserId): OutGoingMsg => ({
@@ -38,40 +92,7 @@ const serverErrorRes = (uid: UserId, err: string): OutGoingMsg => ({
       ts: new Date()
     }})
 
-const addRoom = () => {
-  const room = new Room()
-  roomMap[room.id] = room
-  return room
-}
-
 function toArray<T>(t: T | T[]): T[] {
   const empty: T[] = []
   return empty.concat(t)
-}
-
-class Room {
-  readonly id: RoomId = RoomId(uuid().slice(0, 5))
-  readonly _user_ids: Set<UserId> = new Set<UserId>()
-
-  addUser(uid: UserId): Room {
-    this._user_ids.add(uid)
-    return this
-  }
-
-  removeUser(uid: UserId): Room {
-    this._user_ids.delete(uid)
-    return this
-  }
-
-  roomDetailRes(): OutGoingMsg {
-    return {
-      user_ids: [...this._user_ids],
-      msg: {
-        kind: "RoomDetailRes",
-        room_id: this.id,
-        user_ids: [...this._user_ids],
-        ts: new Date()
-      }
-    }
-  }
 }

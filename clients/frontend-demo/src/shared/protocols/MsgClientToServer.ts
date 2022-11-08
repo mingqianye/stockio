@@ -5,7 +5,7 @@ export type MsgClientToServer = Req & BaseClientToServerMessage
 export type Req = 
   | PingReq
   | CreateRoomReq 
-  | JoinRandomRoomReq
+  | EnterRandomRoomReq
   | EnterRoomReq
   | LeaveRoomReq
   | OrderReq
@@ -21,8 +21,8 @@ export type CreateRoomReq = {
   kind: 'CreateRoomReq'
 }
 
-export type JoinRandomRoomReq = {
-  kind: 'JoinRandomRoomReq'
+export type EnterRandomRoomReq = {
+  kind: 'EnterRandomRoomReq'
 }
 
 export type EnterRoomReq = {

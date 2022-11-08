@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 16,
+    "version": 17,
     "services": [
         {
             "id": 9,
@@ -64,10 +64,10 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 1,
+                    "id": 6,
                     "type": {
                         "type": "Reference",
-                        "target": "MsgClientToServer/JoinRandomRoomReq"
+                        "target": "MsgClientToServer/EnterRandomRoomReq"
                     }
                 },
                 {
@@ -119,7 +119,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                 }
             ]
         },
-        "MsgClientToServer/JoinRandomRoomReq": {
+        "MsgClientToServer/EnterRandomRoomReq": {
             "type": "Interface",
             "properties": [
                 {
@@ -127,7 +127,7 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "kind",
                     "type": {
                         "type": "Literal",
-                        "literal": "JoinRandomRoomReq"
+                        "literal": "EnterRandomRoomReq"
                     }
                 }
             ]
