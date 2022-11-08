@@ -5,9 +5,9 @@ import { ServiceType } from "./protocols/serviceProto";
 
 export type ClientOpts = {
   userId: string
-  onPongRes: (pongRes: PongRes) => unknown
-  onTickRes: (tickRes: TickRes) => unknown
-  onRoomDetailRes: (roomDetailRes: RoomDetailRes) => unknown
+  onPongRes: (pongRes: PongRes) => any
+  onTickRes: (tickRes: TickRes) => any
+  onRoomDetailRes: (roomDetailRes: RoomDetailRes) => any
 }
 
 export class StockioClient {

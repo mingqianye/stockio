@@ -14,6 +14,7 @@ export type PingReq = {
   kind: 'PingReq'
 }
 
+// [START] Room related requests
 export type CreateRoomReq = {
   kind: 'CreateRoomReq'
 }
@@ -31,6 +32,7 @@ export type LeaveRoomReq = {
   kind: 'LeaveRoomReq'
   room_id: RoomId
 }
+// [END] Room related requests
 
 export type OrderReq = {
   kind: 'OrderReq'

@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { RoomId, UserId } from "./shared/protocols/model"
+import { UserId } from "./shared/protocols/model"
 import { PongRes, RoomDetailRes, TickRes } from './shared/protocols/MsgServerToClient';
 import { create } from './client';
 

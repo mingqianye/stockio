@@ -1,4 +1,4 @@
-import { BaseServerToClientMessage, RoomId} from "./model"
+import { BaseServerToClientMessage, RoomId, UserId} from "./model"
 
 export type MsgServerToClient = (
 | PongRes
@@ -11,13 +11,16 @@ export type PongRes = {
   kind: 'PongRes'
 }
 
-export type TickRes = {
-  kind: 'TickRes'
-}
-
+// [START] Room related response
 export type RoomDetailRes = {
   kind: 'RoomDetailRes'
   room_id: RoomId
+  users: UserId[]
+}
+// [END] Room related response
+
+export type TickRes = {
+  kind: 'TickRes'
 }
 
 export type ServerErrorRes = {
