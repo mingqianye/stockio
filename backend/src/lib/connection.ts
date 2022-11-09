@@ -9,7 +9,7 @@ const wsServer = new WsServer<ServiceType>(serviceProto, { port: 3000 });
 
 const reqSubject = new Subject<MsgClientToServer>()
 
-const connectionMap: ConnectionMap = {}
+const connectionMap: Record<UserId, WsConnection> = {}
 
 export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
   await wsServer.start()
@@ -32,8 +32,4 @@ export const reqObservable = reqSubject.asObservable()
 export type OutGoingMsg = {
   user_ids: UserId[]
   msg: MsgServerToClient
-}
-
-type ConnectionMap = {
-  [key: UserId]: WsConnection
 }
