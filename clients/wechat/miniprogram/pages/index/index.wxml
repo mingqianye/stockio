@@ -13,7 +13,7 @@
 
   <!-- 主按钮 -->
   <view class="mainBtn">
-    <view class="commonBtnView btn-top" open-type="getUserInfo" bindgetuserinfo="goGame">
+    <view class="commonBtnView btn-top" bindtap="goTeam">
       <view>
         <view class="btnImg">
           <image src="../../resources/images/index/stock.png" mode="aspectFit"></image>

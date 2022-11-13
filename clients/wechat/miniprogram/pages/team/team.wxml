@@ -1,0 +1,15 @@
+<!--pages/team/team.wxml-->
+<view class="container">
+  <view class="team-title">多人排位</view>
+  <view class="team-main">
+    <view class="user-avater">
+      <open-data type="userAvatarUrl"></open-data>
+    </view>
+    <view class="user-name">
+      <open-data type="userNickName"></open-data>
+    </view>
+  </view>
+  <div class="team-footer">
+    <view class="team-btn">开始匹配</view>
+  </div>
+</view>

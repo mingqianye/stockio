@@ -2,20 +2,9 @@
   "pages": [
     "pages/index/index",
     "pages/account/account",
-    "pages/room/room"
+    "pages/team/team",
+    "pages/queue/queue"
   ],
-  "tabBar": {
-    "list": [
-      {
-        "pagePath": "pages/index/index",
-        "text": "首页"
-      },
-      {
-        "pagePath": "pages/account/account",
-        "text": "账户"
-      }
-    ]
-  },
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",

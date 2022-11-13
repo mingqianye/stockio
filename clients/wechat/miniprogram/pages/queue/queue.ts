@@ -1,4 +1,4 @@
-// pages/room/room.ts
+// pages/queue/queue.ts
 Page({
 
   /**
