@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { UserId } from "./shared/protocols/model"
-import { PongRes, RoomDetailRes, TickRes } from './shared/protocols/MsgServerToClient';
 import { create } from './client';
+import { PongRes } from './shared/protocols/MsgServerToClient';
 
 const App = () => <div className='App'>
     <h1>TSRPC Chatroom</h1>
@@ -9,11 +9,16 @@ const App = () => <div className='App'>
 
 ReactDOM.render(<App />, document.getElementById('app'));
 
-create({
-    userId: UserId("my user id"),
-    onPongRes: (pong: PongRes) => console.log("pong ----->" + JSON.stringify(pong)),
-    onTickRes: (tick: TickRes) => console.log(tick),
-    onRoomDetailRes: (rd: RoomDetailRes) => console.log(rd)
-  }).then(
-    c => c.sendReq({kind: "PingReq"})
-  )
+(async () => { // top-level await for react
+  console.log("before create()")
+
+  const stockioClient = await create({
+      userId: UserId("my user id"),
+    })
+
+  console.log("after create()")
+
+  stockioClient.onPongRes((res: PongRes) => console.log("--->", JSON.stringify(res)))
+  stockioClient.sendReq({kind: "PingReq"})
+
+})()

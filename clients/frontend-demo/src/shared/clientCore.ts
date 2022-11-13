@@ -1,18 +1,16 @@
 import { BaseWsClient } from "tsrpc-base-client"
 import { Req } from "./protocols/MsgClientToServer";
-import { PongRes, RoomDetailRes, TickRes } from "./protocols/MsgServerToClient";
+import { PongRes, Res, RoomDetailRes, TickRes } from "./protocols/MsgServerToClient";
 import { ServiceType } from "./protocols/serviceProto";
 
 export type ClientOpts = {
   userId: string
-  onPongRes: (pongRes: PongRes) => any
-  onTickRes: (tickRes: TickRes) => any
-  onRoomDetailRes: (roomDetailRes: RoomDetailRes) => any
 }
 
 export class StockioClient {
   _wsClient: BaseWsClient<ServiceType>
   _clientOpts: ClientOpts
+  _callbacks: Map<Res["kind"], Callback> = new Map()
 
   constructor(wsClient: BaseWsClient<ServiceType>, clientOpts: ClientOpts) {
     this._wsClient = wsClient
@@ -22,19 +20,8 @@ export class StockioClient {
   async connect() {
     await this._wsClient.connect()
     this._wsClient.listenMsg("ServerToClient", msg => {
-      switch(msg.kind){
-      case "PongRes":
-        this._clientOpts.onPongRes(msg as PongRes)
-        break;
-      case "TickRes":
-        this._clientOpts.onTickRes(msg as TickRes)
-        break;
-      case "RoomDetailRes":
-        this._clientOpts.onRoomDetailRes(msg as RoomDetailRes)
-        break;
-      default:
-        throw new Error(`Unhandled ServerToClient message type: ${JSON.stringify(msg)}`)
-      }
+      const callback = this._callbacks.get(msg.kind) || ((res: Res) => console.error(`Received ${msg.kind} but on${msg.kind} is not available.`))
+      callback(msg)
     })
     // send heartbeat every 10s
     //setInterval(() => this.sendReq({kind: 'PingReq'}).catch(console.error), 10000)
@@ -48,4 +35,18 @@ export class StockioClient {
       ts: new Date()
     })
   }
+
+  onPongRes(f: (res: PongRes) => any) {
+    this._callbacks.set("PongRes", f as Callback)
+  }
+
+  onTickRes(f: (res: TickRes) => any) {
+    this._callbacks.set("TickRes", f as Callback)
+  }
+
+  onRoomDetail(f: (res: RoomDetailRes) => any) {
+    this._callbacks.set("RoomDetailRes", f as Callback)
+  }
 }
+
+type Callback = (res: Res) => any

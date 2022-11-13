@@ -4,7 +4,7 @@ import { serviceProto } from "./shared/protocols/serviceProto";
 
 const wsClient = new WsClient(serviceProto, {
   server: "ws://127.0.0.1:3000",
-  logger: console,
+  //logger: console,
 })
 
 export const create = (clientOpts: ClientOpts) => 

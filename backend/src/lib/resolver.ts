@@ -50,6 +50,7 @@ function roomDetailRes(room: Room): OutGoingMsg {
       kind: "RoomDetailRes",
       room_id: room.id,
       user_ids: [...room.user_ids],
+      room_is_ready: false,
       ts: new Date()
     }
   }
@@ -65,10 +66,6 @@ const translate = (req: MsgClientToServer) =>
   match(req)
     .with({ kind: "PingReq" },
       () => pongRes(req.user_id))
-    .with({ kind: "CreateRoomReq" },
-      () => roomDetailRes(state.createRoom(req.user_id)))
-    .with({ kind: "EnterRoomReq", room_id: P.select() },
-      (roomId) => roomDetailRes(state.enterRoom(req.user_id, roomId)))
     .with({ kind: "EnterRandomRoomReq" },
       () => roomDetailRes(state.enterRandomRoom(req.user_id)))
     .with({ kind: "LeaveRoomReq", room_id: P.select() }, 
