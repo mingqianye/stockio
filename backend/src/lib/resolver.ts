@@ -1,9 +1,13 @@
 import { v4 as uuid } from "uuid";
 import { map, mergeMap, Observable } from "rxjs";
-import { RoomId, UserId } from "../shared/protocols/model";
-import { EnterRandomRoomReq, MsgClientToServer, Req } from "../shared/protocols/MsgClientToServer";
+import { Price, RoomId, UserId } from "../shared/protocols/model";
+import { EnterRandomRoomReq, MsgClientToServer, Req, StartGameReq } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
 import { flow } from "fp-ts/lib/function";
+import { option } from "fp-ts";
+import { Option } from "fp-ts/lib/Option";
+import { match } from "fp-ts/lib/EitherT";
+import { RoomDetailRes } from "../shared/protocols/MsgServerToClient";
 
 namespace Ping {
   export const theFlow: Flow = flow(
@@ -25,7 +29,7 @@ namespace Ping {
 //////////////////////// Flows
 namespace Room {
   type State = {
-    roomMap: Record<RoomId, Room>
+    roomMap: Map<UserId, Room>
   }
 
   type Room = {
@@ -34,57 +38,79 @@ namespace Room {
   }
 
   const state: State = {
-    roomMap: {}
+    roomMap: new Map<UserId, Room>()
   }
 
   export const EnterRandomRoomFlow: Flow = flow(
     extractUid,
-    createRoom,
-    upsertRoom,
+    findOrCreateRoom,
     roomDetailRes
   )
 
   export const LeaveRoomFlow: Flow = flow(
     extractUid,
     removeUser,
-    (rooms) => rooms.map(roomDetailRes)
+    roomDetailRes
   )
 
-  function createRoom(userId: UserId): Room {
+  export const StartGameFlow: Flow = flow(
+    extractUid,
+    findOrCreateRoom,
+    mockGameStarted
+  )
+
+  function createRoom(userId: UserId): Room{
     return {
-      id: RoomId(uuid().slice(0, 5)),
-      userIds: new Set<UserId>().add(userId)
+        id: RoomId(uuid().slice(0, 5)),
+        userIds: new Set<UserId>().add(userId)
     }
   }
 
-  function removeUser(userId: UserId) {
-    return Object.values(state.roomMap)
-      .map(room => {
-        room.userIds.delete(userId)
-        return room
-      })
-      .filter(room => room.userIds.size == 0)
-      .map(deleteRoom)
+  function findOrCreateRoom(userId: UserId): Room {
+    const room = state.roomMap.get(userId) || createRoom(userId)
+    state.roomMap.set(userId, room)
+    return room
   }
 
-  function deleteRoom(r: Room): Room {
-    delete state.roomMap[r.id]
-    return r
+  function removeUser(userId: UserId): Room {
+    const room = findOrCreateRoom(userId)
+    room.userIds.delete(userId)
+    state.roomMap.delete(userId)
+    return room
   }
 
-  function upsertRoom(r: Room): Room {
-    state.roomMap[r.id] = r
-    return r
+  function mockGameStarted(room: Room): OutGoingMsg[] {
+    return [
+      roomDetailRes(room, 'GAME_STARTED'),
+      {
+        userIds: [...room.userIds],
+        msg: {
+          kind: 'TickRes',
+          marketPrice: Price(100),
+          gameClock: 0,
+          ts: new Date()
+        }
+      },
+      {
+        userIds: [...room.userIds],
+        msg: {
+          kind: 'TickRes',
+          marketPrice: Price(150),
+          gameClock: 1,
+          ts: new Date()
+        }
+      }
+    ]
   }
 
-  function roomDetailRes(room: Room): OutGoingMsg {
+  function roomDetailRes(room: Room, status: RoomDetailRes['status'] = 'WAITING'): OutGoingMsg {
     return {
       userIds: [...room.userIds],
       msg: {
         kind: "RoomDetailRes",
         roomId: room.id,
         userIds: [...room.userIds],
-        roomIsReady: false,
+        status: status,
         ts: new Date()
       }
     }
@@ -119,6 +145,7 @@ const flowMap = new Map<MsgClientToServer["kind"], Flow>()
   .set("EnterRandomRoomReq", Room.EnterRandomRoomFlow)
   .set("LeaveRoomReq", Room.LeaveRoomFlow)
   .set("DisconnectReq", Room.LeaveRoomFlow)
+  .set("StartGameReq", Room.StartGameFlow)
 
 const errorFlow = (err: string) => (req: MsgClientToServer) => serverErrorRes(req.userId, err)
 

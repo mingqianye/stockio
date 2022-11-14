@@ -1,4 +1,4 @@
-import { RoomId, UserId} from "./model"
+import { GameClock, Price, RoomId, UserId} from "./model"
 
 export type MsgServerToClient = Res & BaseServerToClientMessage
 
@@ -24,12 +24,14 @@ export type RoomDetailRes = {
   kind: 'RoomDetailRes'
   roomId: RoomId
   userIds: UserId[]
-  roomIsReady: boolean
+  status: 'WAITING' | 'GAME_STARTED'
 }
 // [END] Room response
 
 export type TickRes = {
   kind: 'TickRes'
+  marketPrice: Price
+  gameClock: GameClock
 }
 
 export type BaseServerToClientMessage = {

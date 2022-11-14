@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { UserId } from "./shared/protocols/model"
 import { create } from './client';
-import { PongRes } from './shared/protocols/MsgServerToClient';
+import { PongRes, RoomDetailRes, TickRes } from './shared/protocols/MsgServerToClient';
 
 const App = () => <div className='App'>
     <h1>TSRPC Chatroom</h1>
@@ -19,6 +19,15 @@ ReactDOM.render(<App />, document.getElementById('app'));
   console.log("after create()")
 
   stockioClient.onPongRes((res: PongRes) => console.log("--->", JSON.stringify(res)))
+
+  console.log("sending pingReq")
   stockioClient.sendReq({kind: "PingReq"})
+
+  stockioClient.onRoomDetail((res: RoomDetailRes) => console.log("getting RoomDetails:", res))
+  stockioClient.onTickRes((res: TickRes) => console.log("getting tick: ", res))
+
+  console.log("sending room requests")
+  stockioClient.sendReq({kind: "EnterRandomRoomReq"})
+  stockioClient.sendReq({kind: "StartGameReq"})
 
 })()

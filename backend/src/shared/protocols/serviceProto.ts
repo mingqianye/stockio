@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 21,
+    "version": 22,
     "services": [
         {
             "id": 9,
@@ -78,6 +78,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
+                    "id": 8,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/StartGameReq"
+                    }
+                },
+                {
                     "id": 4,
                     "type": {
                         "type": "Reference",
@@ -135,23 +142,21 @@ export const serviceProto: ServiceProto<ServiceType> = {
                         "type": "Literal",
                         "literal": "LeaveRoomReq"
                     }
-                },
-                {
-                    "id": 1,
-                    "name": "room_id",
-                    "type": {
-                        "type": "Reference",
-                        "target": "model/RoomId"
-                    }
                 }
             ]
         },
-        "model/RoomId": {
-            "type": "Reference",
-            "target": "model/NonEmptyString"
-        },
-        "model/NonEmptyString": {
-            "type": "String"
+        "MsgClientToServer/StartGameReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "StartGameReq"
+                    }
+                }
+            ]
         },
         "MsgClientToServer/OrderReq": {
             "type": "Interface",
@@ -189,6 +194,9 @@ export const serviceProto: ServiceProto<ServiceType> = {
         "model/UserId": {
             "type": "Reference",
             "target": "model/NonEmptyString"
+        },
+        "model/NonEmptyString": {
+            "type": "String"
         },
         "MsgServerToClient/MsgServerToClient": {
             "type": "Intersection",
@@ -286,13 +294,33 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 7,
-                    "name": "roomIsReady",
+                    "id": 8,
+                    "name": "status",
                     "type": {
-                        "type": "Boolean"
+                        "type": "Union",
+                        "members": [
+                            {
+                                "id": 0,
+                                "type": {
+                                    "type": "Literal",
+                                    "literal": "WAITING"
+                                }
+                            },
+                            {
+                                "id": 1,
+                                "type": {
+                                    "type": "Literal",
+                                    "literal": "GAME_STARTED"
+                                }
+                            }
+                        ]
                     }
                 }
             ]
+        },
+        "model/RoomId": {
+            "type": "Reference",
+            "target": "model/NonEmptyString"
         },
         "MsgServerToClient/ServerErrorRes": {
             "type": "Interface",
@@ -324,8 +352,35 @@ export const serviceProto: ServiceProto<ServiceType> = {
                         "type": "Literal",
                         "literal": "TickRes"
                     }
+                },
+                {
+                    "id": 1,
+                    "name": "marketPrice",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/Price"
+                    }
+                },
+                {
+                    "id": 2,
+                    "name": "gameClock",
+                    "type": {
+                        "type": "Reference",
+                        "target": "model/GameClock"
+                    }
                 }
             ]
+        },
+        "model/Price": {
+            "type": "Reference",
+            "target": "model/NonNegativeNumber"
+        },
+        "model/NonNegativeNumber": {
+            "type": "Number"
+        },
+        "model/GameClock": {
+            "type": "Reference",
+            "target": "model/NonNegativeNumber"
         },
         "MsgServerToClient/BaseServerToClientMessage": {
             "type": "Interface",

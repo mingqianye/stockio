@@ -1,10 +1,11 @@
 import { BaseWsClient } from "tsrpc-base-client"
+import { UserId } from "./protocols/model";
 import { Req } from "./protocols/MsgClientToServer";
 import { PongRes, Res, RoomDetailRes, TickRes } from "./protocols/MsgServerToClient";
 import { ServiceType } from "./protocols/serviceProto";
 
 export type ClientOpts = {
-  userId: string
+  userId: UserId
 }
 
 export class StockioClient {
@@ -37,7 +38,7 @@ export class StockioClient {
   sendReq(req: Req) {
     return this._wsClient.sendMsg('ClientToServer', {
       ...req,
-      userId: this._clientOpts.userId,
+      userId: this._clientOpts.userId as UserId,
       ts: new Date()
     })
   }

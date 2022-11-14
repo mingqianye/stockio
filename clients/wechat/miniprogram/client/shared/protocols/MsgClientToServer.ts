@@ -7,6 +7,7 @@ export type Req =
   | DisconnectReq
   | EnterRandomRoomReq
   | LeaveRoomReq
+  | StartGameReq
   | OrderReq
 
 // [START] Utility responses
@@ -26,7 +27,10 @@ export type EnterRandomRoomReq = {
 
 export type LeaveRoomReq = {
   kind: 'LeaveRoomReq'
-  room_id: RoomId
+}
+
+export type StartGameReq = {
+  kind: 'StartGameReq'
 }
 // [END] Room requests
 
