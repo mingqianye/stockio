@@ -25,6 +25,10 @@ export class StockioClient {
       const callback = this._callbacks.get(msg.kind) || StockioClient._printError
       callback(msg)
     })
+    this._wsClient.flows.postDisconnectFlow.push(v => {
+      console.log(`Websocket disconnected: ${JSON.stringify(v)}`)
+      return v
+    })
     // send heartbeat every 10s
     //setInterval(() => this.sendReq({kind: 'PingReq'}).catch(console.error), 10000)
     return this
