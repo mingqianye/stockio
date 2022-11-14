@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 20,
+    "version": 21,
     "services": [
         {
             "id": 9,
@@ -57,6 +57,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
+                    "id": 7,
+                    "type": {
+                        "type": "Reference",
+                        "target": "MsgClientToServer/DisconnectReq"
+                    }
+                },
+                {
                     "id": 6,
                     "type": {
                         "type": "Reference",
@@ -88,6 +95,19 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "type": {
                         "type": "Literal",
                         "literal": "PingReq"
+                    }
+                }
+            ]
+        },
+        "MsgClientToServer/DisconnectReq": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "kind",
+                    "type": {
+                        "type": "Literal",
+                        "literal": "DisconnectReq"
                     }
                 }
             ]

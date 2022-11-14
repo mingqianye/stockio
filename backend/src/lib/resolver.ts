@@ -118,6 +118,7 @@ const flowMap = new Map<MsgClientToServer["kind"], Flow>()
   .set("PingReq", Ping.theFlow)
   .set("EnterRandomRoomReq", Room.EnterRandomRoomFlow)
   .set("LeaveRoomReq", Room.LeaveRoomFlow)
+  .set("DisconnectReq", Room.LeaveRoomFlow)
 
 const errorFlow = (err: string) => (req: MsgClientToServer) => serverErrorRes(req.userId, err)
 
