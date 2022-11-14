@@ -3,15 +3,7 @@ import { map, mergeMap, Observable } from "rxjs";
 import { RoomId, UserId } from "../shared/protocols/model";
 import { EnterRandomRoomReq, MsgClientToServer, Req } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
-import { match, P } from "ts-pattern";
-import { produce } from "immer"
 import { flow } from "fp-ts/lib/function";
-import { Option } from "fp-ts/lib/Option";
-import { option } from "fp-ts";
-
-/////////////////////////// Types
-
-type Flow = (req: MsgClientToServer) => OutGoingMsg | OutGoingMsg[]
 
 namespace Ping {
   export const theFlow: Flow = flow(
@@ -120,6 +112,8 @@ function toArray<T>(t: T | T[]): T[] {
 
 
 //////////////////////////// Entrypoint
+type Flow = (req: MsgClientToServer) => OutGoingMsg | OutGoingMsg[]
+
 const flowMap = new Map<MsgClientToServer["kind"], Flow>()
   .set("PingReq", Ping.theFlow)
   .set("EnterRandomRoomReq", Room.EnterRandomRoomFlow)
