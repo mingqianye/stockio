@@ -30,6 +30,6 @@ export type OrderReq = {
 }
 
 export type BaseClientToServerMessage = {
-  user_id: UserId
+  userId: UserId
   ts: Date
 }

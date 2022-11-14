@@ -14,11 +14,11 @@ const connectionMap: Record<UserId, WsConnection> = {}
 export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
   await wsServer.start()
   wsServer.listenMsg("ClientToServer", (call) => {
-    connectionMap[call.msg.user_id] = call.conn as WsConnection
+    connectionMap[call.msg.userId] = call.conn as WsConnection
     reqSubject.next(call.msg)
   })
   outgoingStream.subscribe(outgoingMsg => {
-    wsServer.broadcastMsg("ServerToClient", outgoingMsg.msg, outgoingMsg.user_ids.map(id => connectionMap[id]))
+    wsServer.broadcastMsg("ServerToClient", outgoingMsg.msg, outgoingMsg.userIds.map(id => connectionMap[id]))
       .then(x => {
         if (x.isSucc) return;
         console.error(x.errMsg)
@@ -30,6 +30,6 @@ export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
 export const reqObservable = reqSubject.asObservable()
 
 export type OutGoingMsg = {
-  user_ids: UserId[]
+  userIds: UserId[]
   msg: MsgServerToClient
 }

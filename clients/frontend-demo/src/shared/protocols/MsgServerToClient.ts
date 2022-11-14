@@ -22,9 +22,9 @@ export type ServerErrorRes = {
 // [START] Room responses
 export type RoomDetailRes = {
   kind: 'RoomDetailRes'
-  room_id: RoomId
-  user_ids: UserId[]
-  room_is_ready: boolean
+  roomId: RoomId
+  userIds: UserId[]
+  roomIsReady: boolean
 }
 // [END] Room response
 

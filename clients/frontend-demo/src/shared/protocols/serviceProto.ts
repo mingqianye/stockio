@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 19,
+    "version": 20,
     "services": [
         {
             "id": 9,
@@ -150,8 +150,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
             "type": "Interface",
             "properties": [
                 {
-                    "id": 0,
-                    "name": "user_id",
+                    "id": 2,
+                    "name": "userId",
                     "type": {
                         "type": "Reference",
                         "target": "model/UserId"
@@ -247,16 +247,16 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 1,
-                    "name": "room_id",
+                    "id": 5,
+                    "name": "roomId",
                     "type": {
                         "type": "Reference",
                         "target": "model/RoomId"
                     }
                 },
                 {
-                    "id": 3,
-                    "name": "user_ids",
+                    "id": 6,
+                    "name": "userIds",
                     "type": {
                         "type": "Array",
                         "elementType": {
@@ -266,8 +266,8 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 4,
-                    "name": "room_is_ready",
+                    "id": 7,
+                    "name": "roomIsReady",
                     "type": {
                         "type": "Boolean"
                     }

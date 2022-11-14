@@ -11,26 +11,26 @@ class State {
   createRoom(uid: UserId): Room {
     const room = {
       id: RoomId(uuid().slice(0, 5)),
-      user_ids: new Set<UserId>().add(uid)
+      userIds: new Set<UserId>().add(uid)
     }
     this._roomMap[room.id] = room
     return room
   }
 
   enterRoom(uid: UserId, roomId: RoomId): Room {
-    this._roomMap[roomId].user_ids.add(uid)
+    this._roomMap[roomId].userIds.add(uid)
     return this._roomMap[roomId]
   }
 
   enterRandomRoom(uid: UserId): Room {
     const room = Object.values(this._roomMap)[0]
-    room.user_ids.add(uid)
+    room.userIds.add(uid)
     return room
   }
 
   leaveRoom(uid: UserId, roomId: RoomId): Room {
     const room = this._roomMap[roomId]
-    room.user_ids.delete(uid)
+    room.userIds.delete(uid)
     return room
   }
 
@@ -40,17 +40,17 @@ const state = new State()
 
 type Room = {
   id: RoomId
-  user_ids: Set<UserId>
+  userIds: Set<UserId>
 }
 
 function roomDetailRes(room: Room): OutGoingMsg {
   return {
-    user_ids: [...room.user_ids],
+    userIds: [...room.userIds],
     msg: {
       kind: "RoomDetailRes",
-      room_id: room.id,
-      user_ids: [...room.user_ids],
-      room_is_ready: false,
+      roomId: room.id,
+      userIds: [...room.userIds],
+      roomIsReady: false,
       ts: new Date()
     }
   }
@@ -65,24 +65,24 @@ export const resolve = (reqObservable: Observable<MsgClientToServer>) =>
 const translate = (req: MsgClientToServer) =>
   match(req)
     .with({ kind: "PingReq" },
-      () => pongRes(req.user_id))
+      () => pongRes(req.userId))
     .with({ kind: "EnterRandomRoomReq" },
-      () => roomDetailRes(state.enterRandomRoom(req.user_id)))
+      () => roomDetailRes(state.enterRandomRoom(req.userId)))
     .with({ kind: "LeaveRoomReq", room_id: P.select() }, 
-      (roomId) => roomDetailRes(state.leaveRoom(req.user_id, roomId)))
+      (roomId) => roomDetailRes(state.leaveRoom(req.userId, roomId)))
     .with({ kind: "OrderReq" }, 
-      () => serverErrorRes(req.user_id, "Not implemented"))
+      () => serverErrorRes(req.userId, "Not implemented"))
     .exhaustive()
 
 const pongRes = (uid: UserId): OutGoingMsg => ({
-  user_ids: [uid],
+  userIds: [uid],
   msg: {
     kind: "PongRes",
     ts: new Date()
   }})
 
 const serverErrorRes = (uid: UserId, err: string): OutGoingMsg => ({
-    user_ids: [uid],
+    userIds: [uid],
     msg: {
       kind: "ServerErrorRes",
       error: err,

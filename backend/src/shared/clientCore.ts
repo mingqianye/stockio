@@ -12,6 +12,8 @@ export class StockioClient {
   _clientOpts: ClientOpts
   _callbacks: Map<Res["kind"], Callback> = new Map()
 
+  static _printError: Callback = (res: Res) => console.error(`Received ${res.kind} but on${res.kind} is not available.`)
+
   constructor(wsClient: BaseWsClient<ServiceType>, clientOpts: ClientOpts) {
     this._wsClient = wsClient
     this._clientOpts = clientOpts
@@ -20,7 +22,7 @@ export class StockioClient {
   async connect() {
     await this._wsClient.connect()
     this._wsClient.listenMsg("ServerToClient", msg => {
-      const callback = this._callbacks.get(msg.kind) || ((res: Res) => console.error(`Received ${msg.kind} but on${msg.kind} is not available.`))
+      const callback = this._callbacks.get(msg.kind) || StockioClient._printError
       callback(msg)
     })
     // send heartbeat every 10s
@@ -31,7 +33,7 @@ export class StockioClient {
   sendReq(req: Req) {
     return this._wsClient.sendMsg('ClientToServer', {
       ...req,
-      user_id: this._clientOpts.userId,
+      userId: this._clientOpts.userId,
       ts: new Date()
     })
   }
