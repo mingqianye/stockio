@@ -30,7 +30,7 @@ export type RoomDetailRes = {
 
 export type TickRes = {
   kind: 'TickRes'
-  marketPrice: Price
+  price: Price
   gameClock: GameClock
 }
 
