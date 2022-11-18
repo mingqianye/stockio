@@ -6,6 +6,7 @@ import IAppOption from "./interface/IAppOption";
 
 App<IAppOption>({
   globalData: {
+    userInfo: ""
   },
   async onLaunch() {
     // 获取系统状态栏信息

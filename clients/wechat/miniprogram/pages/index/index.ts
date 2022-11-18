@@ -5,6 +5,7 @@ import { RoomId, UserId } from "../../client/shared/protocols/model"
 import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
 import IAppOption from "../../interface/IAppOption";
 import { promisify } from "../../utils/util"
+import { StockioClient } from "../../client/shared/clientCore";
 
 const app = getApp<IAppOption>()
 
@@ -19,31 +20,28 @@ Page({
   },
   // 事件处理函数
   goTeam() {
+    let stockioClient = app.globalData.stockioClient
+    console.log(stockioClient)
+    stockioClient.onPongRes((res: PongRes) => console.log("--->", JSON.stringify(res)))
+    stockioClient.sendReq({kind: "PingReq"})
     wx.navigateTo({
       url: '../team/team',
     })
   },
   async onLoad() {
-    // create({
-    //   userId: UserId("my user id"),
-    //   onPongRes: (pong: PongRes) => console.log("pong ----->" + JSON.stringify(pong)),
-    //   onTickRes: (tick: TickRes) => console.log(tick),
-    //   onRoomDetailRes: (rd: RoomDetailRes) => console.log(rd)
-    // }).then(
-    //   c => req = c
-    // )
-    // await app.globalData.socket.sendReq({kind: "PingReq"})
-    
-    // @ts-ignore
   },
   async onShow() {
-    // await app.globalData.socket.sendReq({kind: "PingReq"})
-    // console.log(app.globalData.socket)
     await this.getUserInfo()
+    await this.createStockioClient()
+  },
+
+  async createStockioClient() {
+    const stockioClient: StockioClient = await create({ userId: UserId(app.globalData.userInfo) })
+    app.globalData.stockioClient = stockioClient
   },
 
   wxLogin: promisify(wx.login),
-  
+
   async getUserInfo() {
     const wxloginRes: any = await this.wxLogin();
     app.globalData.userInfo = wxloginRes.code

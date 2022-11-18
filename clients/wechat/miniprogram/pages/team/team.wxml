@@ -10,6 +10,6 @@
     </view>
   </view>
   <div class="team-footer">
-    <view class="team-btn">开始匹配</view>
+    <view class="team-btn" bindtap="onRoom">开始匹配</view>
   </div>
 </view>

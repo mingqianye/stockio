@@ -4,7 +4,7 @@ import { StockioClient } from "../client/shared/clientCore";
 export default interface IAppOption {
   globalData: {
     stockioClient?: StockioClient,
-    userInfo?: String
+    userInfo: string
   }
 
   eventQueue?: Array<any> | undefined
