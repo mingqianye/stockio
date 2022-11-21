@@ -13,7 +13,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 24,
+    "version": 25,
     "services": [
         {
             "id": 9,
@@ -303,13 +303,13 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     }
                 },
                 {
-                    "id": 6,
-                    "name": "userIds",
+                    "id": 9,
+                    "name": "teams",
                     "type": {
                         "type": "Array",
                         "elementType": {
                             "type": "Reference",
-                            "target": "model/UserId"
+                            "target": "model/Team"
                         }
                     }
                 },
@@ -341,6 +341,22 @@ export const serviceProto: ServiceProto<ServiceType> = {
         "model/RoomId": {
             "type": "Reference",
             "target": "model/NonEmptyString"
+        },
+        "model/Team": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "userIds",
+                    "type": {
+                        "type": "Array",
+                        "elementType": {
+                            "type": "Reference",
+                            "target": "model/UserId"
+                        }
+                    }
+                }
+            ]
         },
         "MsgServerToClient/ServerErrorRes": {
             "type": "Interface",

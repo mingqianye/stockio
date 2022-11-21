@@ -109,7 +109,9 @@ function roomDetailRes(room: Immutable<Room>): OutGoingMsg {
     msg: {
       kind: "RoomDetailRes",
       roomId: room.id,
-      userIds: [...room.userIds],
+      teams: [{
+        userIds: [...room.userIds],
+      }],
       status: room.status,
       ts: new Date()
     }
@@ -231,10 +233,10 @@ function translate(req: MsgClientToServer | TimerTickReq, entities: Immutable<En
     .exhaustive()
 }
 
-const timer$: Observable<TimerTickReq> = interval(1000)
-  .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
-
 export function resolve(req$: Observable<MsgClientToServer>) {
+  const timer$: Observable<TimerTickReq> = interval(1000)
+    .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
+
   return merge(req$, timer$).pipe(
     map(x => translate(x, getEntities())),
     map(output => {

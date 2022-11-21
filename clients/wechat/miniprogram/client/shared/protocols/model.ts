@@ -5,6 +5,10 @@ export type AmountPrice = {
   price: Price
 }
 
+export type Team = {
+  userIds: UserId[]
+}
+
 export type RoomId = NonEmptyString
 
 export type UserId = NonEmptyString
