@@ -4,6 +4,9 @@ import { create } from "../../client/client"
 import { RoomId, UserId } from "../../client/shared/protocols/model"
 import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
 import IAppOption from "../../interface/IAppOption";
+import { promisify } from "../../utils/util"
+import { StockioClient } from "../../client/shared/clientCore";
+
 const app = getApp<IAppOption>()
 
 Page({
@@ -17,53 +20,31 @@ Page({
   },
   // 事件处理函数
   goTeam() {
+    let stockioClient = app.globalData.stockioClient
+    console.log(stockioClient)
+    stockioClient.onPongRes((res: PongRes) => console.log("--->", JSON.stringify(res)))
+    stockioClient.sendReq({kind: "PingReq"})
     wx.navigateTo({
       url: '../team/team',
     })
   },
   async onLoad() {
-    // create({
-    //   userId: UserId("my user id"),
-    //   onPongRes: (pong: PongRes) => console.log("pong ----->" + JSON.stringify(pong)),
-    //   onTickRes: (tick: TickRes) => console.log(tick),
-    //   onRoomDetailRes: (rd: RoomDetailRes) => console.log(rd)
-    // }).then(
-    //   c => req = c
-    // )
-    // await app.globalData.socket.sendReq({kind: "PingReq"})
-    
-    // @ts-ignore
-    if (wx.getUserProfile) {
-      this.setData({
-        canIUseGetUserProfile: true
-      })
-    }
   },
   async onShow() {
-    
-    // await app.globalData.socket.sendReq({kind: "PingReq"})
-    console.log(app.globalData.socket)
+    await this.getUserInfo()
+    await this.createStockioClient()
   },
 
-  getUserProfile() {
-    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-    // wx.getUserProfile({
-    //   desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-    //   success: (res) => {
-    //     console.log(res)
-    //     this.setData({
-    //       userInfo: res.userInfo,
-    //       hasUserInfo: true
-    //     })
-    //   }
-    // })
+  async createStockioClient() {
+    const stockioClient: StockioClient = await create({ userId: UserId(app.globalData.userInfo) })
+    app.globalData.stockioClient = stockioClient
   },
-  getUserInfo(e: any) {
-    // 不推荐使用getUserInfo获取用户信息，预计自2021年4月13日起，getUserInfo将不再弹出弹窗，并直接返回匿名的用户个人信息
-    console.log(e)
-    this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
-    })
+
+  wxLogin: promisify(wx.login),
+
+  async getUserInfo() {
+    const wxloginRes: any = await this.wxLogin();
+    app.globalData.userInfo = wxloginRes.code
+    console.log(app.globalData.userInfo)
   }
 })
