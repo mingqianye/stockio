@@ -1,4 +1,4 @@
-import { GameClock, Price, RoomId, UserId } from "../shared/protocols/model"
+import { GameClock, Price, RoomId, TeamId, UserId } from "../shared/protocols/model"
 import { castImmutable, Immutable } from "immer"
 import { createSelector } from "reselect"
 import { findAllInValues } from "./func"
@@ -11,6 +11,7 @@ export type Store = {
 export type Entities = {
   users: Map<UserId, User>
   rooms: Map<RoomId, Room>
+  teams: Map<TeamId, Team>
   games: Map<GameId, Game>
 }
 
@@ -22,6 +23,11 @@ export type Room = {
   id: RoomId
   userIds: Set<UserId>
   status: 'WAITING' | 'GAME_STARTED'
+}
+
+export type Team = {
+  id: TeamId
+  userIds: Set<UserId>
 }
 
 export type Game = {
@@ -38,6 +44,7 @@ export type GameId = string
 const store: Store = {
   entities: {
     users: new Map(),
+    teams: new Map(),
     rooms: new Map(),
     games: new Map()
   }
@@ -47,6 +54,8 @@ export const getEntities = () => store.entities
 export const setEntities = (entities: Immutable<Entities>) => store.entities = entities
 
 
+export const selectUsers = (entities: Immutable<Entities>) => entities.users
+export const selectTeams = (entities: Immutable<Entities>) => entities.teams
 export const selectRooms = (entities: Immutable<Entities>) => entities.rooms
 export const selectGames = (entities: Immutable<Entities>) => entities.games
 
