@@ -9,19 +9,20 @@ const wsServer = new WsServer<ServiceType>(serviceProto, { port: 3000 });
 
 const reqSubject = new Subject<MsgClientToServer>()
 
-const connectionMap: Record<UserId, WsConnection> = {}
+const connectionMap: Map<UserId, WsConnection> = new Map()
 
 export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
   await wsServer.start()
 
   wsServer.listenMsg("ClientToServer", (call) => {
-    connectionMap[call.msg.userId] = call.conn as WsConnection
+    connectionMap.set(call.msg.userId, call.conn as WsConnection)
     reqSubject.next(call.msg)
   })
 
   wsServer.flows.postDisconnectFlow.push(call =>{
     console.log(`Connection id: ${call.conn.id} is disconnected.`)
-    Object.entries(connectionMap)
+    //Object.entries(connectionMap)
+    Array.from(connectionMap.entries())
       .filter(entry => entry[1].id == call.conn.id)
       .forEach(entry => {
         // Synthesize a disconnection event
@@ -30,7 +31,7 @@ export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
           userId: entry[0],
           ts: new Date()
         })
-        delete connectionMap[entry[0]]
+        connectionMap.delete(entry[0])
       })
 
     return call
@@ -38,7 +39,7 @@ export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
 
 
   outgoingStream.subscribe(outgoingMsg => {
-    wsServer.broadcastMsg("ServerToClient", outgoingMsg.msg, outgoingMsg.userIds.map(id => connectionMap[id]))
+    wsServer.broadcastMsg("ServerToClient", outgoingMsg.msg, outgoingMsg.userIds.map(id => connectionMap.get(id)!))
       .then(x => {
         if (x.isSucc) return;
         console.error(x.errMsg)

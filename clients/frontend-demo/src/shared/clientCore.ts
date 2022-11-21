@@ -1,7 +1,7 @@
 import { BaseWsClient } from "tsrpc-base-client"
 import { UserId } from "./protocols/model";
 import { Req } from "./protocols/MsgClientToServer";
-import { PongRes, Res, RoomDetailRes, TickRes } from "./protocols/MsgServerToClient";
+import { PongRes, Res, RoomDetailRes, ServerErrorRes, TickRes } from "./protocols/MsgServerToClient";
 import { ServiceType } from "./protocols/serviceProto";
 
 export type ClientOpts = {
@@ -30,6 +30,8 @@ export class StockioClient {
       console.log(`Websocket disconnected: ${JSON.stringify(v)}`)
       return v
     })
+
+    this.sendReq({kind: "ConnectReq"})
     // send heartbeat every 10s
     //setInterval(() => this.sendReq({kind: 'PingReq'}).catch(console.error), 10000)
     return this
@@ -53,6 +55,10 @@ export class StockioClient {
 
   onRoomDetail(f: (res: RoomDetailRes) => any) {
     this._callbacks.set("RoomDetailRes", f as Callback)
+  }
+
+  onServerErrorRes(f: (res: ServerErrorRes) => any) {
+    this._callbacks.set("ServerErrorRes", f as Callback)
   }
 }
 

@@ -2,6 +2,9 @@ import { Observable, Subject } from "rxjs";
 import * as connection from "./lib/connection";
 import { MsgClientToServer } from "./shared/protocols/MsgClientToServer";
 import * as resolver from "./lib/resolver"
+import { enableMapSet } from "immer";
+
+enableMapSet()
 
 
 const reqObservable: Observable<MsgClientToServer> = connection.reqObservable

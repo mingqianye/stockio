@@ -1,199 +1,195 @@
 import { v4 as uuid } from "uuid";
 import { interval, map, merge, mergeMap, Observable, Subject } from "rxjs";
 import { GameClock, Price, RoomId, UserId } from "../shared/protocols/model";
-import { EnterRandomRoomReq, MsgClientToServer, Req, StartGameReq } from "../shared/protocols/MsgClientToServer";
+import { EnterRandomRoomReq, MsgClientToServer, PingReq, Req, StartGameReq } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
-import { flow } from "fp-ts/lib/function";
-import { option } from "fp-ts";
-import { Option } from "fp-ts/lib/Option";
-import { match } from "fp-ts/lib/EitherT";
+import { flow, pipe } from "fp-ts/lib/function";
 import { RoomDetailRes, TickRes } from "../shared/protocols/MsgServerToClient";
+import { Entities, Game, getEntities, Room, selectActiveGames, selectGamesByUserId, selectRoomsByUserId, setEntities, User } from "./store";
+import { produce, Immutable, current, original, castImmutable } from "immer";
+import { match, P } from "ts-pattern";
+import * as O from "fp-ts/lib/Option";
 
-namespace Ping {
-  export const theFlow: Flow = flow(
-    extractUid,
-    pongRes
-  )
-
-  function pongRes(uid: UserId): OutGoingMsg {
-    return {
-      userIds: [uid],
+function pingFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
+  return {
+    outgoingMsg: {
+      userIds: [userId],
       msg: {
         kind: "PongRes",
         ts: new Date()
       }
-    }
+    },
+    newEntities: entities
   }
 }
 
-//////////////////////// Flows
-namespace Room {
-  type State = {
-    roomMap: Map<UserId, Room>
-  }
-
-  type Room = {
-    id: RoomId
-    userIds: Set<UserId>
-  }
-
-  const state: State = {
-    roomMap: new Map<UserId, Room>()
-  }
-
-  export const EnterRandomRoomFlow: Flow = flow(
-    extractUid,
-    findOrCreateRoom,
-    roomDetailRes
-  )
-
-  export const LeaveRoomFlow: Flow = flow(
-    extractUid,
-    removeUser,
-    roomDetailRes
-  )
-
-  export const StartGameFlow: Flow = flow(
-    extractUid,
-    findOrCreateRoom,
-    startGame
-  )
-
-  function createRoom(userId: UserId): Room{
-    return {
-        id: RoomId(uuid().slice(0, 5)),
-        userIds: new Set<UserId>().add(userId),
-    }
-  }
-
-  function findOrCreateRoom(userId: UserId): Room {
-    const room = state.roomMap.get(userId) || createRoom(userId)
-    state.roomMap.set(userId, room)
-    return room
-  }
-
-  function removeUser(userId: UserId): Room {
-    const room = findOrCreateRoom(userId)
-    room.userIds.delete(userId)
-    state.roomMap.delete(userId)
-    return room
-  }
-
-  function startGame(room: Room): OutGoingMsg {
-    Game.startGame([...room.userIds])
-    return roomDetailRes(room, 'GAME_STARTED')
-  }
-
-  function roomDetailRes(room: Room, status: RoomDetailRes['status'] = 'WAITING'): OutGoingMsg {
-    return {
-      userIds: [...room.userIds],
-      msg: {
-        kind: "RoomDetailRes",
-        roomId: room.id,
-        userIds: [...room.userIds],
-        status: status,
-        ts: new Date()
-      }
-    }
-  }
-}
-
-namespace Game {
-  const outGoingMsgSubject = new Subject<OutGoingMsg>()
-  export const outGoingMsgStream = outGoingMsgSubject.asObservable();
-
-  const state: State = {
-    gameMap: new Map<UserId, Game>()
-  }
-
-  type State = {
-    gameMap: Map<UserId, Game>
-  }
-
-  type Game = {
-    userIds: Set<UserId>
-    price: Price
-    gameClock: GameClock
-  }
-
-  const leaveGameFlow = flow(
-    extractUid,
-    removeUser,
-    _ => [] as OutGoingMsg[]
-  )
-
-  function removeUser(userId: UserId): Game {
-    const g = findOrCreateGame(userId)
-    g.userIds.delete(userId)
-    state.gameMap.delete(userId)
-    return g
-  }
-
-
-  function findOrCreateGame(userId: UserId): Game {
-    const game = state.gameMap.get(userId) || createGame([userId])
-    state.gameMap.set(userId, game)
-    return game
-  }
-
-  function createGame(userIds: UserId[]): Game {
-    return {
-      userIds: new Set<UserId>(userIds),
-      price: 0,
-      gameClock: 0
-    }
-  }
-
-  export function startGame(userIds: UserId[]): void {
-    const game = upsertGame(userIds)
-    interval(1000)
-      .pipe(map(_ => tickRes(next(game))))
-      .subscribe(msg => outGoingMsgSubject.next(msg))
-  }
-
-  function upsertGame(userIds: UserId[]): Game {
-    const game: Game = {
-      userIds: new Set<UserId>(userIds),
-      price: 0,
-      gameClock: 0
-    }
-    userIds.forEach(uid => state.gameMap.set(uid, game))
-    return game
-  }
-
-
-
-  export function next(g: Game): Game {
-    g.gameClock = g.gameClock + 1
-    g.price = 100 + Math.floor(Math.random() * 50)
-    return g
-  }
-
-  export function tickRes(g: Game): OutGoingMsg {
-    return {
-      userIds: [...g.userIds],
-      msg: {
-        kind: "TickRes",
-        price: g.price,
-        gameClock: g.gameClock,
-        ts: new Date()
-      }
-    }
-  }
-}
-
-function extractUid(req: MsgClientToServer): UserId {
-  return req.userId
-}
-
-function serverErrorRes(uid: UserId, err: string): OutGoingMsg {
+function connectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return {
-    userIds: [uid],
+    outgoingMsg: [],
+    newEntities: produce(entities, draft => {
+      draft.users.set(userId, {id: userId})
+    })
+  }
+}
+
+function disconnectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
+  return {
+    outgoingMsg: [],
+    newEntities: produce(entities, draft => {
+      draft.users.delete(userId)
+      selectRoomsByUserId(entities, userId)
+        .map(room => room.id)
+        .forEach(rid => draft.rooms.get(rid)?.userIds.delete(userId))
+      
+      selectGamesByUserId(entities, userId)
+        .map(game => game.id)
+        .forEach(gid => draft.games.get(gid)?.userIds.delete(userId))
+    })
+  }
+}
+
+function enterRandomRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
+  return pipe(
+    entities,
+    e => selectRoomsByUserId(e, userId)[0],
+    O.fromNullable,
+    O.match(
+      () => 
+        pipe(
+          userId,
+          uid => ({
+            id: RoomId(uuid().slice(0, 5)),
+            userIds: new Set<UserId>().add(uid),
+            status: 'WAITING'
+          } as Room),
+          newRoom => ({
+            outgoingMsg: roomDetailRes(newRoom),
+            newEntities: produce(entities, draft => {
+              draft.rooms.set(newRoom.id, newRoom as Room)
+            })
+          })
+        ),
+      room => {
+        return {
+          outgoingMsg: roomDetailRes(room),
+          newEntities: entities
+        }
+      }
+    )
+  )
+}
+
+function leaveRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
+  return pipe(
+    entities,
+    e => selectRoomsByUserId(e, userId)[0],
+    O.fromNullable,
+    O.map(room => room.id),
+    O.match(
+      () => ({
+        newEntities: entities,
+        outgoingMsg: []
+      }),
+      (roomId: RoomId) => {
+        const newEntity = produce(entities, draft => {
+          draft.rooms.get(roomId)!.userIds.delete(userId)
+        })
+        return {
+          newEntities: newEntity,
+          outgoingMsg: roomDetailRes(newEntity.rooms.get(roomId)!)
+        } as FlowOutput
+      }
+    )
+  )
+}
+
+function roomDetailRes(room: Immutable<Room>): OutGoingMsg {
+  return {
+    userIds: [...room.userIds],
     msg: {
-      kind: "ServerErrorRes",
-      error: err,
+      kind: "RoomDetailRes",
+      roomId: room.id,
+      userIds: [...room.userIds],
+      status: room.status,
       ts: new Date()
-    }}
+    }
+  }
+}
+
+function startGameFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput{
+  const newGame = (fromRoom: Immutable<Room>): Game => ({
+      id: RoomId(uuid().slice(0, 5)),
+      userIds: new Set(fromRoom.userIds),
+      price: 100,
+      gameClock: 0,
+      status: 'ACTIVE',
+      ts: new Date()
+  })
+
+  return pipe(
+    entities,
+    e => selectGamesByUserId(e, userId)[0],
+    O.fromNullable,
+    O.match(
+      () => {
+        const room = produce(selectRoomsByUserId(entities, userId)[0], draft => {
+          draft.status = 'GAME_STARTED'
+        })
+        const game: Game = newGame(room)
+        return {
+          newEntities: produce(entities, draft => {
+            draft.rooms.set(room.id, room as Room)
+            draft.games.set(game.id, game)
+          }),
+          outgoingMsg: [roomDetailRes(room), tickRes(game)]
+        } as FlowOutput
+      },
+      (game) => {
+        return {
+          newEntities: entities,
+          outgoingMsg: []
+        }
+      }
+    )
+  )
+}
+
+function tickRes(g: Game|Immutable<Game>): OutGoingMsg {
+  return {
+    userIds: [...g.userIds],
+    msg: {
+      kind: "TickRes",
+      price: g.price,
+      gameClock: g.gameClock,
+      ts: new Date()
+    }
+  }
+}
+
+function timerTickFlow(entities: Immutable<Entities>, ts: Date): FlowOutput {
+  function computeGame(game: Immutable<Game>, ts: Date): Immutable<Game> {
+    return produce(game, draft => {
+      draft.gameClock++
+      draft.price = 100 + Math.floor(Math.random() * 50)
+      draft.ts = ts
+    })
+  }
+
+  return pipe(
+    entities,
+    e => selectActiveGames(e),
+    games => games.map(g => computeGame(g, ts)),
+    games => {
+      return {
+        outgoingMsg: games.map(tickRes),
+        newEntities: produce(entities, draft => {
+          games.forEach(g => {
+            draft.games.set(g.id, g as Game)
+          })
+        })
+      } as FlowOutput
+    }
+  )
 }
 
 function toArray<T>(t: T | T[]): T[] {
@@ -203,23 +199,53 @@ function toArray<T>(t: T | T[]): T[] {
 
 
 //////////////////////////// Entrypoint
-type Flow = (req: MsgClientToServer) => OutGoingMsg | OutGoingMsg[]
+type FlowOutput = {
+  outgoingMsg: OutGoingMsg | OutGoingMsg[]
+  newEntities: Immutable<Entities>
+}
 
-const flowMap = new Map<MsgClientToServer["kind"], Flow>()
-  .set("PingReq", Ping.theFlow)
-  .set("EnterRandomRoomReq", Room.EnterRandomRoomFlow)
-  .set("LeaveRoomReq", Room.LeaveRoomFlow)
-  .set("DisconnectReq", Room.LeaveRoomFlow)
-  .set("StartGameReq", Room.StartGameFlow)
+function errorFlow(userId: UserId, entities: Immutable<Entities>, err: string): FlowOutput {
+  return {
+    outgoingMsg: {
+      userIds: [userId],
+      msg: {
+        kind: "ServerErrorRes",
+        error: err,
+        ts: new Date()
+      }
+    },
+    newEntities: entities
+  }
+}
 
-const errorFlow = (err: string) => (req: MsgClientToServer) => serverErrorRes(req.userId, err)
+function translate(req: MsgClientToServer | TimerTickReq, entities: Immutable<Entities>): FlowOutput {
+  return match(req)
+    .with({kind: "PingReq", userId: P.select()}, uid => pingFlow(uid, entities))
+    .with({kind: "ConnectReq", userId: P.select()}, uid => connectReqFlow(uid, entities))
+    .with({kind: "DisconnectReq", userId: P.select()}, uid => disconnectReqFlow(uid, entities))
+    .with({kind: "EnterRandomRoomReq", userId: P.select()}, uid => enterRandomRoomFlow(uid, entities))
+    .with({kind: "LeaveRoomReq", userId: P.select()}, uid => leaveRoomFlow(uid, entities))
+    .with({kind: "StartGameReq", userId: P.select()}, uid => startGameFlow(uid, entities))
+    .with({kind: "OrderReq", userId: P.select()}, uid => errorFlow(uid, entities, 'Not implemented'))
+    .with({kind: "TimerTickReq", ts: P.select()}, (ts) => timerTickFlow(entities, ts))
+    .exhaustive()
+}
 
-const translate: Flow = (msg: MsgClientToServer) => 
-  (flowMap.get(msg.kind) || errorFlow(`Handler not Implemented for ${msg.kind}`))(msg)
+const timer$: Observable<TimerTickReq> = interval(1000)
+  .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
 
-export function resolve(reqObservable: Observable<MsgClientToServer>) {
-  const nonGameObservable = reqObservable.pipe(
-      map(translate),
-      mergeMap(toArray))
-  return merge(nonGameObservable, Game.outGoingMsgStream)
+export function resolve(req$: Observable<MsgClientToServer>) {
+  return merge(req$, timer$).pipe(
+    map(x => translate(x, getEntities())),
+    map(output => {
+      setEntities(output.newEntities)
+      return output.outgoingMsg
+    }),
+    mergeMap(toArray))
+}
+
+type TimerTickReq = {
+  kind: 'TimerTickReq'
+  count: number
+  ts: Date
 }

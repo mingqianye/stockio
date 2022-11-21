@@ -4,6 +4,7 @@ export type MsgClientToServer = Req & BaseClientToServerMessage
 
 export type Req = 
   | PingReq
+  | ConnectReq
   | DisconnectReq
   | EnterRandomRoomReq
   | LeaveRoomReq
@@ -13,6 +14,10 @@ export type Req =
 // [START] Utility responses
 export type PingReq = {
   kind: 'PingReq'
+}
+
+export type ConnectReq = {
+  kind: 'ConnectReq'
 }
 
 export type DisconnectReq = {
