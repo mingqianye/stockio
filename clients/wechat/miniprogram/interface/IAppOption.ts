@@ -3,6 +3,7 @@ import { StockioClient } from "../client/shared/clientCore";
 
 export default interface IAppOption {
   globalData: {
+    systemInfo?: WechatMiniprogram.GetSystemInfoSuccessCallbackResult,
     stockioClient?: StockioClient,
     userInfo: string
   }

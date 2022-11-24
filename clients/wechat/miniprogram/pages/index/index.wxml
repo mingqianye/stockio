@@ -30,7 +30,6 @@
       
     </view>
   </view>
-
   <!-- 次按钮
   <view class="subBtn">
     <view class='commonBtnView subBtn-left' open-type="getUserInfo" bindgetuserinfo="goRank">

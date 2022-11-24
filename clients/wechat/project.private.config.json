@@ -5,5 +5,18 @@
     "compileHotReLoad": true,
     "urlCheck": false
   },
-  "libVersion": "2.10.4"
+  "libVersion": "2.8.3",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "",
+          "pathName": "pages/room/room",
+          "query": "roomId=2332a",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  }
 }
