@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { interval, map, merge, mergeMap, Observable, Subject } from "rxjs";
+import { interval, map, merge, mergeMap, Observable, Subject, tap } from "rxjs";
 import { GameClock, Price, RoomId, UserId } from "../shared/protocols/model";
 import { EnterRandomRoomReq, MsgClientToServer, PingReq, Req, StartGameReq } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
@@ -50,32 +50,21 @@ function disconnectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowO
 
 function enterRandomRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return pipe(
-    entities,
-    e => selectRoomsByUserId(e, userId)[0],
-    O.fromNullable,
-    O.match(
-      () => 
-        pipe(
-          userId,
-          uid => ({
-            id: RoomId(uuid().slice(0, 5)),
-            userIds: new Set<UserId>().add(uid),
-            status: 'WAITING'
-          } as Room),
-          newRoom => ({
-            outgoingMsg: roomDetailRes(newRoom),
-            newEntities: produce(entities, draft => {
-              draft.rooms.set(newRoom.id, newRoom as Room)
-            })
-          })
-        ),
-      room => {
-        return {
-          outgoingMsg: roomDetailRes(room),
-          newEntities: entities
-        }
-      }
-    )
+    O.of(selectRoomsByUserId(entities, userId)[0]),
+    O.getOrElse(() => castImmutable<Room>({
+      id: RoomId(uuid().slice(0, 5)),
+      userIds: new Set<UserId>(),
+      status: 'WAITING'
+    } as Room)),
+    room => produce(room, draft => {
+      draft.userIds.add(userId)
+    }), 
+    room => ({
+      outgoingMsg: roomDetailRes(room),
+      newEntities: produce(entities, draft => {
+        draft.rooms.set(room.id, room as Room)
+      })
+    })
   )
 }
 
@@ -233,16 +222,14 @@ function translate(req: MsgClientToServer | TimerTickReq, entities: Immutable<En
     .exhaustive()
 }
 
-export function resolve(req$: Observable<MsgClientToServer>) {
+export function resolve$(req$: Observable<MsgClientToServer>) {
   const timer$: Observable<TimerTickReq> = interval(1000)
     .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
 
   return merge(req$, timer$).pipe(
     map(x => translate(x, getEntities())),
-    map(output => {
-      setEntities(output.newEntities)
-      return output.outgoingMsg
-    }),
+    tap(flowOutput => setEntities(flowOutput.newEntities)),
+    map(flowOutput => flowOutput.outgoingMsg),
     mergeMap(toArray))
 }
 
