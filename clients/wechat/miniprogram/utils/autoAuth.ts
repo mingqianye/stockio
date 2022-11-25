@@ -1,7 +1,7 @@
 import IAppOption from "../interface/IAppOption"
 import { create } from "../client/client"
 import { UserId } from "../client/shared/protocols/model"
-// import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
+import { ServerErrorRes } from '../client/shared/protocols/MsgServerToClient';
 import { promisify } from "../utils/util"
 import { StockioClient } from "../client/shared/clientCore";
 

@@ -10,7 +10,6 @@ const app = getApp<IAppOption>()
 var stockioClient: StockioClient | undefined
 
 Page({
-
   data: {
     userList: [
       {
@@ -74,7 +73,7 @@ Page({
     }
   },
 
-  async onLoad(options) {
+  onLoad: async function(options) {
     stockioClient = app.globalData.stockioClient
     setWatcher(this)
     if(options.roomId) {
@@ -84,9 +83,9 @@ Page({
     }
   },
 
-  async onShow() {},
+  onShow: function() {},
 
-  async onUnload() { await this.leaveRoom() },
+  onUnload: async function() { await this.leaveRoom() },
 
   onShareAppMessage: function (res) {
     if (res.from === 'button') {
@@ -101,7 +100,7 @@ Page({
   },
 
   // 如果进入房间时带有RoomId，则视为加入房间
-  async enterRoom(roomId: RoomId) {
+  enterRoom: async function(roomId: RoomId) {
     await stockioClient?.onRoomDetail((res: RoomDetailRes) => {
       this.setData({ enterRandomRoomReq: res })
     })
@@ -109,7 +108,7 @@ Page({
   },
 
   // 如果进入房间时RoomId为空，则视为创建新房间
-  async createRoom() {
+  createRoom: async function() {
     await stockioClient?.onRoomDetail((res: RoomDetailRes) => {
       console.log("getting RoomDetails:", res)
       this.setData({ 
@@ -121,6 +120,6 @@ Page({
   },
 
   // 卸载页面时候，离开房间
-  async leaveRoom() { await stockioClient?.sendReq({ kind: "LeaveRoomReq" }) },
+  leaveRoom: async function() { await stockioClient?.sendReq({ kind: "LeaveRoomReq" }) },
 
 })

@@ -6,17 +6,16 @@ App<IAppOption>({
   globalData: {
     userInfo: ""
   },
+
   async onLaunch() {
     // 获取系统状态栏信息
-    wx.getSystemInfo({ success: e => this.globalData.systemInfo = e })
+    await wx.getSystemInfo({ success: e => this.globalData.systemInfo = e })
 
     // 开启动态监听globalData钩子
     await this.observeGlobalData();
   },
 
   onShow: function () {
-    console.log(this.globalData.systemInfo);
-
     // 自动登录检查
     autoAuth(this)
   },

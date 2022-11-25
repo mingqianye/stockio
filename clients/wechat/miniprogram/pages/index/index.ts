@@ -1,27 +1,16 @@
 // index.ts
-import IAppOption from "../../interface/IAppOption";
-
-const app = getApp<IAppOption>()
 
 Page({
   data: {},
 
-  async onLoad() {},
+  onLoad: function() {},
 
-  async onShow() {},
+  onShow: function() {},
 
   // 点击排位赛
-  onTeamClicked() {
-    wx.navigateTo({
-      url: '../team/team',
-    })
-  },
+  onTeamClicked: function() { wx.navigateTo({ url: '../team/team' }) },
 
   // 点击创建房间
-  onRoomClicked() {
-    wx.navigateTo({
-      url: '../room/room',
-    })
-  },
+  onRoomClicked: function() { wx.navigateTo({ url: '../room/room' }) },
 
 })
