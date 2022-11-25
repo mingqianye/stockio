@@ -9,6 +9,8 @@ export type Team = {
   userIds: UserId[]
 }
 
+export type TeamId = NonEmptyString
+
 export type RoomId = NonEmptyString
 
 export type UserId = NonEmptyString

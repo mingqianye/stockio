@@ -9,6 +9,6 @@ enableMapSet()
 
 const reqObservable: Observable<MsgClientToServer> = connection.reqObservable
 
-const resObservable: Observable<connection.OutGoingMsg> = resolver.resolve(reqObservable)
+const resObservable: Observable<connection.OutGoingMsg> = resolver.resolve$(reqObservable)
 
 connection.start(resObservable).catch(console.error)
