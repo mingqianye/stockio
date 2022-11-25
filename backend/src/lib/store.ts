@@ -1,4 +1,4 @@
-import { GameClock, Price, RoomId, TeamId, UserId } from "../shared/protocols/model"
+import * as m from "../shared/protocols/model"
 import { castImmutable, Immutable } from "immer"
 import { createSelector } from "reselect"
 import { findAllInValues, isEqual } from "./func"
@@ -53,13 +53,16 @@ export type Team = {
 export type Game = {
   id: GameId
   status: 'ACTIVE' | 'COMPLETED'
-  price: Price
-  gameClock: GameClock
+  price: m.Price
+  gameClock: m.GameClock
   ts: Date
 }
 
-export type WaitlistId = string
-export type GameId = string
+export type UserId = m.UserId & {_: 'UserId'}
+export type TeamId = m.TeamId & {_: 'TeamId'}
+export type RoomId = m.RoomId & {_: 'RoomId'}
+export type GameId = string & {_: 'GameId'}
+export type WaitlistId = string & {_: 'WaitlistId'}
 
 const store: Store = {
   entities: {

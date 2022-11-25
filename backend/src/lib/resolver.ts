@@ -1,11 +1,11 @@
 import { v4 as uuid } from "uuid";
 import { interval, map, merge, mergeMap, Observable, Subject, tap } from "rxjs";
-import { GameClock, Price, RoomId, UserId } from "../shared/protocols/model";
+import { GameClock, Price } from "../shared/protocols/model";
 import { EnterRandomRoomReq, MsgClientToServer, PingReq, Req, StartGameReq } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
 import { flow, pipe } from "fp-ts/lib/function";
 import { RoomDetailRes, TickRes } from "../shared/protocols/MsgServerToClient";
-import { Entities, Game, GameId, getEntities, Room, selectActiveGames, selectRoomByTeamId, selectRoomByUserId, selectTeamByUserId, selectTeamsByRoomId, selectUsersByGameId, selectUsersByRoomId, selectUsersByTeamId, setEntities, User } from "./store";
+import { Entities, Game, GameId, getEntities, Room, RoomId, selectActiveGames, selectRoomByTeamId, selectRoomByUserId, selectTeamByUserId, selectTeamsByRoomId, selectUsersByGameId, selectUsersByRoomId, selectUsersByTeamId, setEntities, TeamId, User, UserId } from "./store";
 import { produce, Immutable, current, original, castImmutable } from "immer";
 import { match, P } from "ts-pattern";
 import * as O from "fp-ts/lib/Option";
@@ -46,8 +46,8 @@ function disconnectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowO
 function enterRandomRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return pipe(
     IO.Do,
-    IO.bind("teamId", () => IO.of(RoomId(uuid().slice(0, 5)))),
-    IO.bind("roomId", () => IO.of(RoomId(uuid().slice(0, 5)))),
+    IO.bind("teamId", () => IO.of(uuid().slice(0, 5) as TeamId)),
+    IO.bind("roomId", () => IO.of(uuid().slice(0, 5) as RoomId)),
     IO.bind("newEntities", ({teamId, roomId}) => IO.of(produce(entities, draft => {
       draft.users.set(userId, {
         id: userId,
@@ -114,7 +114,7 @@ function startGameFlow(userId: UserId, entities: Immutable<Entities>): FlowOutpu
     O.bind("teamId", () => selectTeamByUserId(entities, userId)),
     O.bind("roomId", ({teamId}) => selectRoomByTeamId(entities, teamId)),
     O.bind("allTeamIds", ({roomId}) => O.of(selectTeamsByRoomId(entities, roomId))),
-    O.bind("gameId", () => O.of(uuid().slice(0, 5))),
+    O.bind("gameId", () => O.of(uuid().slice(0, 5) as GameId)),
     O.bind("newEntities", ({allTeamIds, roomId, gameId}) => O.of(produce(entities, draft => {
       allTeamIds.forEach(teamId => {
         draft.teams.get(teamId)!.status = {
@@ -206,13 +206,13 @@ function errorFlow(userId: UserId, entities: Immutable<Entities>, err: string): 
 
 function translate(req: MsgClientToServer | TimerTickReq, entities: Immutable<Entities>): FlowOutput {
   return match(req)
-    .with({kind: "PingReq", userId: P.select()}, uid => pingFlow(uid, entities))
-    .with({kind: "ConnectReq", userId: P.select()}, uid => connectReqFlow(uid, entities))
-    .with({kind: "DisconnectReq", userId: P.select()}, uid => disconnectReqFlow(uid, entities))
-    .with({kind: "EnterRandomRoomReq", userId: P.select()}, uid => enterRandomRoomFlow(uid, entities))
-    .with({kind: "LeaveRoomReq", userId: P.select()}, uid => leaveRoomFlow(uid, entities))
-    .with({kind: "StartGameReq", userId: P.select()}, uid => startGameFlow(uid, entities))
-    .with({kind: "OrderReq", userId: P.select()}, uid => errorFlow(uid, entities, 'Not implemented'))
+    .with({kind: "PingReq", userId: P.select()}, uid => pingFlow(uid as UserId, entities))
+    .with({kind: "ConnectReq", userId: P.select()}, uid => connectReqFlow(uid as UserId, entities))
+    .with({kind: "DisconnectReq", userId: P.select()}, uid => disconnectReqFlow(uid as UserId, entities))
+    .with({kind: "EnterRandomRoomReq", userId: P.select()}, uid => enterRandomRoomFlow(uid as UserId, entities))
+    .with({kind: "LeaveRoomReq", userId: P.select()}, uid => leaveRoomFlow(uid as UserId, entities))
+    .with({kind: "StartGameReq", userId: P.select()}, uid => startGameFlow(uid as UserId, entities))
+    .with({kind: "OrderReq", userId: P.select()}, uid => errorFlow(uid as UserId, entities, 'Not implemented'))
     .with({kind: "TimerTickReq", ts: P.select()}, (ts) => timerTickFlow(entities, ts))
     .exhaustive()
 }
