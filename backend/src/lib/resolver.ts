@@ -5,10 +5,11 @@ import { EnterRandomRoomReq, MsgClientToServer, PingReq, Req, StartGameReq } fro
 import { OutGoingMsg } from "./connection";
 import { flow, pipe } from "fp-ts/lib/function";
 import { RoomDetailRes, TickRes } from "../shared/protocols/MsgServerToClient";
-import { Entities, Game, getEntities, Room, selectActiveGames, selectGamesByUserId, selectRoomsByUserId, setEntities, User } from "./store";
+import { Entities, Game, GameId, getEntities, Room, selectActiveGames, selectRoomByTeamId, selectRoomByUserId, selectTeamByUserId, selectTeamsByRoomId, selectUsersByGameId, selectUsersByRoomId, selectUsersByTeamId, setEntities, User } from "./store";
 import { produce, Immutable, current, original, castImmutable } from "immer";
 import { match, P } from "ts-pattern";
 import * as O from "fp-ts/lib/Option";
+import {io as IO} from "fp-ts";
 
 function pingFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return {
@@ -27,7 +28,10 @@ function connectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowOutp
   return {
     outgoingMsg: [],
     newEntities: produce(entities, draft => {
-      draft.users.set(userId, {id: userId})
+      draft.users.set(userId, {
+        id: userId,
+        status: { type: 'IDLE' }
+      })
     })
   }
 }
@@ -35,123 +39,114 @@ function connectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowOutp
 function disconnectReqFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return {
     outgoingMsg: [],
-    newEntities: produce(entities, draft => {
-      draft.users.delete(userId)
-      selectRoomsByUserId(entities, userId)
-        .map(room => room.id)
-        .forEach(rid => draft.rooms.get(rid)?.userIds.delete(userId))
-      
-      selectGamesByUserId(entities, userId)
-        .map(game => game.id)
-        .forEach(gid => draft.games.get(gid)?.userIds.delete(userId))
-    })
+    newEntities: entities
   }
 }
 
 function enterRandomRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return pipe(
-    O.of(selectRoomsByUserId(entities, userId)[0]),
-    O.getOrElse(() => castImmutable<Room>({
-      id: RoomId(uuid().slice(0, 5)),
-      userIds: new Set<UserId>(),
-      status: 'WAITING'
-    } as Room)),
-    room => produce(room, draft => {
-      draft.userIds.add(userId)
-    }), 
-    room => ({
-      outgoingMsg: roomDetailRes(room),
-      newEntities: produce(entities, draft => {
-        draft.rooms.set(room.id, room as Room)
+    IO.Do,
+    IO.bind("teamId", () => IO.of(RoomId(uuid().slice(0, 5)))),
+    IO.bind("roomId", () => IO.of(RoomId(uuid().slice(0, 5)))),
+    IO.bind("newEntities", ({teamId, roomId}) => IO.of(produce(entities, draft => {
+      draft.users.set(userId, {
+        id: userId,
+        status: {
+          type: 'IN_TEAM',
+          teamId: teamId
+        }
       })
-    })
-  )
+      draft.teams.set(teamId, {
+        id: teamId,
+        status: {
+          type: 'IN_ROOM',
+          roomId: roomId
+        }
+      })
+      draft.rooms.set(roomId, {
+        id: roomId,
+        status: 'WAITING',
+      })
+    }))),
+    IO.bind("outgoingMsg", ({newEntities, roomId}) => IO.of(roomDetailRes(newEntities, roomId))),
+  )()
 }
 
 function leaveRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return pipe(
-    entities,
-    e => selectRoomsByUserId(e, userId)[0],
-    O.fromNullable,
-    O.map(room => room.id),
-    O.match(
-      () => ({
-        newEntities: entities,
-        outgoingMsg: []
-      }),
-      (roomId: RoomId) => {
-        const newEntity = produce(entities, draft => {
-          draft.rooms.get(roomId)!.userIds.delete(userId)
-        })
-        return {
-          newEntities: newEntity,
-          outgoingMsg: roomDetailRes(newEntity.rooms.get(roomId)!)
-        } as FlowOutput
-      }
-    )
+    O.Do,
+    O.bind("roomId", () => selectRoomByUserId(entities, userId)),
+    O.bind("newEntities", () => O.of(produce(entities, draft => {
+      draft.users.get(userId)!.status.type = 'IDLE'
+    }))),
+    O.map(({newEntities, roomId}) => ({
+      newEntities: newEntities,
+      outgoingMsg: roomDetailRes(newEntities, roomId)
+    })),
+    O.getOrElse((): FlowOutput => ({
+      newEntities: entities,
+      outgoingMsg: []
+    }))
   )
 }
 
-function roomDetailRes(room: Immutable<Room>): OutGoingMsg {
-  return {
-    userIds: [...room.userIds],
-    msg: {
-      kind: "RoomDetailRes",
-      roomId: room.id,
-      teams: [{
-        userIds: [...room.userIds],
-      }],
-      status: room.status,
-      ts: new Date()
-    }
-  }
+function roomDetailRes(entities: Immutable<Entities>, roomId: RoomId): OutGoingMsg {
+  return pipe(
+    selectUsersByRoomId(entities, roomId),
+    userIds => ({
+      userIds: userIds,
+      msg: {
+        kind: "RoomDetailRes",
+        roomId: roomId,
+        teams: [{
+          userIds: userIds,
+        }],
+        status: entities.rooms.get(roomId)!.status,
+        ts: new Date()
+      }
+    })
+  )
 }
 
 function startGameFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput{
-  const newGame = (fromRoom: Immutable<Room>): Game => ({
-      id: RoomId(uuid().slice(0, 5)),
-      userIds: new Set(fromRoom.userIds),
-      price: 100,
-      gameClock: 0,
-      status: 'ACTIVE',
-      ts: new Date()
-  })
-
   return pipe(
-    entities,
-    e => selectGamesByUserId(e, userId)[0],
-    O.fromNullable,
-    O.match(
-      () => {
-        const room = produce(selectRoomsByUserId(entities, userId)[0], draft => {
-          draft.status = 'GAME_STARTED'
-        })
-        const game: Game = newGame(room)
-        return {
-          newEntities: produce(entities, draft => {
-            draft.rooms.set(room.id, room as Room)
-            draft.games.set(game.id, game)
-          }),
-          outgoingMsg: [roomDetailRes(room), tickRes(game)]
-        } as FlowOutput
-      },
-      (game) => {
-        return {
-          newEntities: entities,
-          outgoingMsg: []
+    O.Do,
+    O.bind("teamId", () => selectTeamByUserId(entities, userId)),
+    O.bind("roomId", ({teamId}) => selectRoomByTeamId(entities, teamId)),
+    O.bind("allTeamIds", ({roomId}) => O.of(selectTeamsByRoomId(entities, roomId))),
+    O.bind("gameId", () => O.of(uuid().slice(0, 5))),
+    O.bind("newEntities", ({allTeamIds, roomId, gameId}) => O.of(produce(entities, draft => {
+      allTeamIds.forEach(teamId => {
+        draft.teams.get(teamId)!.status = {
+          type: 'IN_GAME',
+          gameId: gameId
         }
-      }
-    )
+      })
+      draft.rooms.get(roomId)!.status = 'GAME_STARTED'
+
+      draft.games.set(gameId, {
+        id: gameId,
+        status: 'ACTIVE',
+        price: 100,
+        gameClock: 0,
+        ts: new Date()
+      })
+    }))),
+    O.bind("outgoingMsg", () => O.of([])),
+    O.getOrElse((): FlowOutput => ({
+      newEntities: entities,
+      outgoingMsg: []
+    }))
   )
 }
 
-function tickRes(g: Game|Immutable<Game>): OutGoingMsg {
+function tickRes(entities: Immutable<Entities>, gameId: GameId): OutGoingMsg {
   return {
-    userIds: [...g.userIds],
+    userIds: selectUsersByGameId(entities, gameId),
     msg: {
       kind: "TickRes",
-      price: g.price,
-      gameClock: g.gameClock,
+      price: entities.games.get(gameId)!.price,
+      gameClock: entities.games.get(gameId)!.gameClock,
       ts: new Date()
     }
   }
@@ -172,7 +167,7 @@ function timerTickFlow(entities: Immutable<Entities>, ts: Date): FlowOutput {
     games => games.map(g => computeGame(g, ts)),
     games => {
       return {
-        outgoingMsg: games.map(tickRes),
+        outgoingMsg: games.map(g => tickRes(entities, g.id)),
         newEntities: produce(entities, draft => {
           games.forEach(g => {
             draft.games.set(g.id, g as Game)
@@ -223,7 +218,7 @@ function translate(req: MsgClientToServer | TimerTickReq, entities: Immutable<En
 }
 
 export function resolve$(req$: Observable<MsgClientToServer>) {
-  const timer$: Observable<TimerTickReq> = interval(1000)
+  const timer$: Observable<TimerTickReq> = interval(5000)
     .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
 
   return merge(req$, timer$).pipe(
