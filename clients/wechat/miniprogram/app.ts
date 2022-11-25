@@ -1,8 +1,6 @@
 // app.ts
-// import { create } from "./client/client"
-// import { RoomId, UserId } from "./client/shared/protocols/model"
-// import { PongRes, RoomDetailRes, TickRes } from './client/shared/protocols/MsgServerToClient';
 import IAppOption from "./interface/IAppOption";
+import autoAuth from "./utils/autoAuth"
 
 App<IAppOption>({
   globalData: {
@@ -10,22 +8,17 @@ App<IAppOption>({
   },
   async onLaunch() {
     // 获取系统状态栏信息
-    wx.getSystemInfo({ success: e => console.log(e) })
+    wx.getSystemInfo({ success: e => this.globalData.systemInfo = e })
 
     // 开启动态监听globalData钩子
     await this.observeGlobalData();
+  },
 
-    // console.log("==========")
-    // const stockioClient = await create({
-    //   userId: UserId("my user id")
-    // })
-    
-    // this.globalData.stockioClient = stockioClient
+  onShow: function () {
+    console.log(this.globalData.systemInfo);
 
-    // console.log("aaa", this.globalData.stockioClient)
-    // // this.globalData.stockioClient?.onPongRes((res: PongRes) => console.log("--->", JSON.stringify(res)))
-    // this.globalData.stockioClient?.sendReq({kind: "PingReq"})
-    // console.log(this.eventQueue)
+    // 自动登录检查
+    autoAuth(this)
   },
 
   observeGlobalData() {

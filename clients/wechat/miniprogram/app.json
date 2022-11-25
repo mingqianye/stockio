@@ -3,7 +3,9 @@
     "pages/index/index",
     "pages/account/account",
     "pages/team/team",
-    "pages/queue/queue"
+    "pages/queue/queue",
+    "pages/room/room",
+    "pages/tick/tick"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -11,6 +13,5 @@
     "navigationBarTitleText": "",
     "navigationBarTextStyle": "black"
   },
-  "style": "v2",
   "sitemapLocation": "sitemap.json"
 }

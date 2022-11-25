@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="room-title">创建房间</view>
+
+  <view class="room-main">
+    <view class="room-list">
+      <view class="list-item" wx:for="{{userList}}" wx:key="index" wx:for-item="user">
+        <view class="user-avater">
+          <image src="" />
+        </view>
+        <view class="user-name">
+          <text>{{user.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  
+  <div class="room-footer">
+    <view class="room-btn" bindtap="onRoom">开始比赛</view>
+    <view class="room-btn" bindtap="joinRoomClicked">加入房间</view>
+  </div>
+</view>

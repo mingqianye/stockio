@@ -9,7 +9,7 @@ Page({
   stockioClient: StockioClient,
 
   data: {
-
+    roomDetailRes: {}
   },
 
   onLoad() {
@@ -20,10 +20,20 @@ Page({
     stockioClient = app.globalData.stockioClient
   },
 
-  onRoom() {
-    console.log("===", stockioClient)
-    stockioClient.onRoomDetail((res: RoomDetailRes) => console.log("getting RoomDetails:", res))
-    stockioClient.sendReq({kind: "EnterRandomRoomReq"})
+  async onRoom() {
+    await stockioClient.onRoomDetail((res: RoomDetailRes) => {
+      console.log("getting RoomDetails:", res)
+      this.setData({
+        roomDetailRes: res
+      })
+    })
+    await stockioClient.sendReq({kind: "EnterRandomRoomReq"})
+    console.log("===", this.data.roomDetailRes)
+    stockioClient.onTickRes((res: TickRes) => console.log("getting tick: ", res))
+    stockioClient.sendReq({kind: "StartGameReq"})
+    wx.navigateTo({
+      url: '../queue/queue?roomId=' + this.data.roomDetailRes.roomId,
+    })
   }
 
 })
