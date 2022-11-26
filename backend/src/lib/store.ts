@@ -1,7 +1,7 @@
 import * as m from "../shared/protocols/model"
 import { castImmutable, Immutable } from "immer"
 import { createSelector } from "reselect"
-import { findAllInValues, isEqual } from "./func"
+import { getOption, getValues, isEqual } from "./func"
 import { fromNullable } from "fp-ts/lib/Option"
 import { map } from "fp-ts/lib/Functor"
 import { pipe, flow } from "fp-ts/lib/function"
@@ -77,16 +77,9 @@ const store: Store = {
 export const getEntities = () => store.entities
 export const setEntities = (entities: Immutable<Entities>) => store.entities = entities
 
-
-export const selectUsers = (entities: Immutable<Entities>) => entities.users
-export const selectWaitlist = (entities: Immutable<Entities>) => entities.waitlists
-export const selectTeams = (entities: Immutable<Entities>) => entities.teams
-export const selectRooms = (entities: Immutable<Entities>) => entities.rooms
-export const selectGames = (entities: Immutable<Entities>) => entities.games
-
 export const selectTeamByUserId = (entities: Immutable<Entities>, userId: UserId): O.Option<TeamId> =>
   pipe(
-    O.fromNullable(entities.users.get(userId)),
+    getOption(entities.users, userId),
     O.chain(u => match(u.status)
       .with({type: 'IN_TEAM', teamId: P.select()}, teamId => O.of(teamId))
       .otherwise(() => O.none)))
@@ -150,8 +143,3 @@ export const selectUsersByRoomId = (entities: Immutable<Entities>, roomId: RoomI
     array.map(teamId => selectUsersByTeamId(entities, teamId)),
     array.flatten
   )
-
-export const selectActiveGames = createSelector(
-  selectGames,
-  gameEntity => findAllInValues(gameEntity, v => v.status == 'ACTIVE')
-)

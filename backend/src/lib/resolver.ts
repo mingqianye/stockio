@@ -3,11 +3,12 @@ import { interval, map, merge, mergeMap, Observable, Subject, tap } from "rxjs";
 import { MsgClientToServer } from "../shared/protocols/MsgClientToServer";
 import { OutGoingMsg } from "./connection";
 import { flow, pipe } from "fp-ts/lib/function";
-import { Entities, Game, GameId, getEntities, Room, RoomId, selectActiveGames, selectRoomByTeamId, selectRoomByUserId, selectTeamByUserId, selectTeamsByRoomId, selectUsersByGameId, selectUsersByRoomId, selectUsersByTeamId, setEntities, TeamId, User, UserId } from "./store";
+import { Entities, Game, GameId, getEntities, Room, RoomId, selectRoomByTeamId, selectRoomByUserId, selectTeamByUserId, selectTeamsByRoomId, selectUsersByGameId, selectUsersByRoomId, selectUsersByTeamId, setEntities, TeamId, User, UserId } from "./store";
 import { produce, Immutable, current, original, castImmutable } from "immer";
 import { match, P } from "ts-pattern";
 import * as O from "fp-ts/lib/Option";
-import {io as IO} from "fp-ts";
+import {array, io as IO} from "fp-ts";
+import { getOption, getValues, updateIfExists } from "./func";
 
 function pingFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
   return {
@@ -71,10 +72,29 @@ function createRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutp
 }
 
 function enterRoomFlow(userId: UserId, roomId: RoomId, entities: Immutable<Entities>): FlowOutput {
-  return {
-    outgoingMsg: [],
-    newEntities: entities
-  }
+  return pipe(
+    getOption(entities.rooms, roomId),
+    O.bind('teamId', () => O.of(uuid().slice(0,5) as TeamId)),
+    O.bind('newEntities', ({teamId}) => O.of(produce(entities, draft => {
+      updateIfExists(draft.users, userId, userDraft => {
+        userDraft.status = {
+          type: 'IN_TEAM',
+          teamId: teamId
+        }
+      })
+      updateIfExists(draft.teams, teamId, teamDraft => {
+        teamDraft.status = {
+          type: 'IN_ROOM',
+          roomId: roomId
+        }
+      })
+    }))),
+    O.bind('outgoingMsg', ({newEntities}) => O.of(roomDetailRes(newEntities, roomId))),
+    O.getOrElse((): FlowOutput => ({
+      newEntities: entities,
+      outgoingMsg: []
+    }))
+  )
 }
 
 function leaveRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutput {
@@ -82,7 +102,7 @@ function leaveRoomFlow(userId: UserId, entities: Immutable<Entities>): FlowOutpu
     O.Do,
     O.bind("roomId", () => selectRoomByUserId(entities, userId)),
     O.bind("newEntities", () => O.of(produce(entities, draft => {
-      draft.users.get(userId)!.status.type = 'IDLE'
+      updateIfExists(draft.users, userId, user => user.status.type = 'IDLE')
     }))),
     O.map(({newEntities, roomId}) => ({
       newEntities: newEntities,
@@ -122,12 +142,15 @@ function startGameFlow(userId: UserId, entities: Immutable<Entities>): FlowOutpu
     O.bind("gameId", () => O.of(uuid().slice(0, 5) as GameId)),
     O.bind("newEntities", ({allTeamIds, roomId, gameId}) => O.of(produce(entities, draft => {
       allTeamIds.forEach(teamId => {
-        draft.teams.get(teamId)!.status = {
-          type: 'IN_GAME',
-          gameId: gameId
-        }
+        updateIfExists(draft.teams, teamId, teamDraft => {
+          teamDraft.status = {
+            type: 'IN_GAME',
+            gameId: gameId
+          }
+        })
       })
-      draft.rooms.get(roomId)!.status = 'GAME_STARTED'
+
+      updateIfExists(draft.rooms, roomId, roomDraft => roomDraft.status = 'GAME_STARTED')
 
       draft.games.set(gameId, {
         id: gameId,
@@ -137,7 +160,7 @@ function startGameFlow(userId: UserId, entities: Immutable<Entities>): FlowOutpu
         ts: new Date()
       })
     }))),
-    O.bind("outgoingMsg", () => O.of([])),
+    O.bind("outgoingMsg", ({newEntities, gameId}) => O.of(tickRes(newEntities, gameId))),
     O.getOrElse((): FlowOutput => ({
       newEntities: entities,
       outgoingMsg: []
@@ -167,19 +190,17 @@ function timerTickFlow(entities: Immutable<Entities>, ts: Date): FlowOutput {
   }
 
   return pipe(
-    entities,
-    e => selectActiveGames(e),
-    games => games.map(g => computeGame(g, ts)),
-    games => {
-      return {
-        outgoingMsg: games.map(g => tickRes(entities, g.id)),
-        newEntities: produce(entities, draft => {
-          games.forEach(g => {
-            draft.games.set(g.id, g as Game)
-          })
+    getValues(entities.games),
+    array.filter(g => g.status == 'ACTIVE'),
+    array.map(g => computeGame(g, ts)),
+    games => ({
+      outgoingMsg: games.map(g => tickRes(entities, g.id)),
+      newEntities: produce(entities, draft => {
+        games.forEach(g => {
+          draft.games.set(g.id, g as Game)
         })
-      } as FlowOutput
-    }
+      })
+    })
   )
 }
 
