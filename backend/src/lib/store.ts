@@ -86,8 +86,7 @@ export const selectTeamByUserId = (entities: Immutable<Entities>, userId: UserId
 
 export const selectRoomByTeamId = (entities: Immutable<Entities>, teamId: TeamId): O.Option<RoomId> =>
   pipe(
-    entities.teams.get(teamId),
-    O.fromNullable,
+    getOption(entities.teams, teamId),
     O.chain(team => match(team.status)
       .with({type: 'IN_ROOM', roomId: P.select()}, roomId => O.of(roomId))
       .otherwise(() => O.none)))
@@ -100,23 +99,21 @@ export const selectRoomByUserId = (entities: Immutable<Entities>, userId: UserId
 
 export const selectGameByTeamId = (entities: Immutable<Entities>, teamId: TeamId): O.Option<GameId> =>
   pipe(
-    O.fromNullable(entities.teams.get(teamId)),
+    getOption(entities.teams, teamId),
     O.chain(team => match(team.status)
       .with({type: "IN_GAME", gameId: P.select()}, gameId => O.of(gameId))
       .otherwise(() => O.none)))
 
 export const selectUsersByTeamId = (entities: Immutable<Entities>, teamId: TeamId): UserId[] =>
   pipe(
-    entities.users.values(),
-    it => Array.from(it),
+    getValues(entities.users),
     array.map(user => user.id),
     array.filter(userId => isEqual(teamId, selectTeamByUserId(entities, userId)))
   )
 
 export const selectTeamsByRoomId = (entities: Immutable<Entities>, roomId: RoomId): TeamId[] =>
   pipe(
-    entities.teams.values(),
-    it => Array.from(it),
+    getValues(entities.teams),
     array.map(team => team.id),
     array.filter(teamId => isEqual(roomId, selectRoomByTeamId(entities, teamId)))
   )
