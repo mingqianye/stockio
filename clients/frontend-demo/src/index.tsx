@@ -30,7 +30,7 @@ ReactDOM.render(<App />, document.getElementById('app'));
   stockioClient.onReconnected(() => console.log("websocket is reconnected."))
 
   console.log("sending room requests")
-  stockioClient.sendReq({kind: "EnterRandomRoomReq"})
+  stockioClient.sendReq({kind: "CreateRoomReq"})
   stockioClient.sendReq({kind: "StartGameReq"})
 
 })()

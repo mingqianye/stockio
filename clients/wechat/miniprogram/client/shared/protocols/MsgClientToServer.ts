@@ -6,7 +6,8 @@ export type Req =
   | PingReq
   | ConnectReq
   | DisconnectReq
-  | EnterRandomRoomReq
+  | CreateRoomReq
+  | EnterRoomReq
   | LeaveRoomReq
   | StartGameReq
   | OrderReq
@@ -26,8 +27,13 @@ export type DisconnectReq = {
 // [END] Utility responses
 
 // [START] Room requests
-export type EnterRandomRoomReq = {
-  kind: 'EnterRandomRoomReq'
+export type CreateRoomReq = {
+  kind: 'CreateRoomReq'
+}
+
+export type EnterRoomReq = {
+  kind: 'EnterRoomReq'
+  roomId: RoomId
 }
 
 export type LeaveRoomReq = {
