@@ -8,7 +8,9 @@ export default interface IAppOption {
     userInfo: string
   }
 
-  eventQueue?: Array<any> | undefined
+  eventQueue?: Array<any> | undefined 
+
+  pageCallback?(fn: any): void
 
   observeGlobalData(): void
 

@@ -18,7 +18,10 @@ const getUserInfo = async (_app: IAppOption) => {
 const checkAuth = async (_app: IAppOption) => {
   await getUserInfo(_app)
   const stockioClient: StockioClient = await create({ userId: UserId(_app.globalData.userInfo) })
+  stockioClient.onDisconnected(err => console.log("websocket is disconnected: ", err))
+  stockioClient.onReconnected(() => console.log("websocket is reconnected."))
   _app.globalData.stockioClient = stockioClient
+  console.log(stockioClient)
 }
 
 // 自动连接websocket的main方法
