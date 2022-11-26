@@ -26,6 +26,9 @@ ReactDOM.render(<App />, document.getElementById('app'));
   stockioClient.onRoomDetail((res: RoomDetailRes) => console.log("getting RoomDetails:", res))
   stockioClient.onTickRes((res: TickRes) => console.log("getting tick: ", res))
 
+  stockioClient.onDisconnected(err => console.log("websocket is disconnected: ", err))
+  stockioClient.onReconnected(() => console.log("websocket is reconnected."))
+
   console.log("sending room requests")
   stockioClient.sendReq({kind: "EnterRandomRoomReq"})
   stockioClient.sendReq({kind: "StartGameReq"})

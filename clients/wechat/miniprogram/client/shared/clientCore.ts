@@ -11,9 +11,9 @@ export type ClientOpts = {
 export class StockioClient {
   _wsClient: BaseWsClient<ServiceType>
   _clientOpts: ClientOpts
-  _callbacks: Map<Res["kind"], Callback> = new Map()
+  _callbacks: Map<(Res|ConnectionRes)['kind'], Callback> = new Map()
 
-  static _printError: Callback = (res: Res) => console.error(`Received ${res.kind} but on${res.kind} is not available.`)
+  static _printError: Callback = res => console.error(`Received ${res} but onXXX function is not available.`)
 
   constructor(wsClient: BaseWsClient<ServiceType>, clientOpts: ClientOpts) {
     this._wsClient = wsClient
@@ -28,12 +28,20 @@ export class StockioClient {
     })
     this._wsClient.flows.postDisconnectFlow.push(v => {
       console.log(`Websocket disconnected: ${JSON.stringify(v)}`)
+      if (!v.isManual) {
+        retry({
+          intervalMs: 2000,
+          remainingRetries: 100,
+          task: () => this._wsClient.connect(),
+          isSuccess: result => result.isSucc,
+          onSuccess: () => this._callbacks.get("WebsocketReconnectedRes")!(),
+          onFailure: result => this._callbacks.get("WebsocketDisconnectedRes")!(result.errMsg!)
+        })
+      }
       return v
     })
 
     this.sendReq({kind: "ConnectReq"})
-    // send heartbeat every 10s
-    //setInterval(() => this.sendReq({kind: 'PingReq'}).catch(console.error), 10000)
     return this
   }
 
@@ -45,21 +53,72 @@ export class StockioClient {
     })
   }
 
-  onPongRes(f: (res: PongRes) => any) {
+  onPongRes(f: (res: PongRes) => unknown) {
     this._callbacks.set("PongRes", f as Callback)
   }
 
-  onTickRes(f: (res: TickRes) => any) {
+  onTickRes(f: (res: TickRes) => unknown) {
     this._callbacks.set("TickRes", f as Callback)
   }
 
-  onRoomDetail(f: (res: RoomDetailRes) => any) {
+  onRoomDetail(f: (res: RoomDetailRes) => unknown) {
     this._callbacks.set("RoomDetailRes", f as Callback)
   }
 
-  onServerErrorRes(f: (res: ServerErrorRes) => any) {
+  onServerErrorRes(f: (res: ServerErrorRes) => unknown) {
     this._callbacks.set("ServerErrorRes", f as Callback)
+  }
+
+  onDisconnected(f: (err: string) => unknown) {
+    this._callbacks.set("WebsocketDisconnectedRes", f as Callback)
+  }
+
+  onReconnected(f: () => unknown) {
+    this._callbacks.set("WebsocketReconnectedRes", f as Callback)
   }
 }
 
-type Callback = (res: Res) => any
+type ConnectionRes =
+  | WebsocketDisconnectedRes
+  | WebsocketReconnectedRes
+
+export type WebsocketDisconnectedRes = {
+  kind: 'WebsocketDisconnectedRes'
+  err: string
+}
+
+export type WebsocketReconnectedRes = {
+  kind: 'WebsocketReconnectedRes'
+}
+
+type Callback = (res: Res|ConnectionRes|string|void) => unknown
+
+function retry<T>(opts: RetryOpts<T>) {
+  setTimeout(async () => {
+    if (opts.remainingRetries <= 0) {
+      return
+    }
+    const taskResult = await opts.task()
+
+    if (opts.isSuccess(taskResult)) {
+      opts.onSuccess(taskResult)
+      return
+    }
+
+    opts.onFailure(taskResult)
+
+    retry({
+      ...opts, 
+      remainingRetries: opts.remainingRetries - 1
+    })
+  }, opts.intervalMs)
+}
+
+type RetryOpts<T> = {
+  intervalMs: number,
+  remainingRetries: number,
+  task: () => Promise<T>
+  isSuccess: (result: T) => boolean
+  onSuccess: (result: T) => unknown
+  onFailure: (result: T) => unknown
+}
