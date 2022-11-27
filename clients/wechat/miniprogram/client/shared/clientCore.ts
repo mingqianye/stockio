@@ -6,6 +6,7 @@ import { ServiceType } from "./protocols/serviceProto";
 
 export type ClientOpts = {
   userId: UserId
+  onUnableToConnect: (err: string) => any
 }
 
 export class StockioClient {
@@ -21,7 +22,12 @@ export class StockioClient {
   }
 
   async connect() {
-    await this._wsClient.connect()
+    const {isSucc, errMsg} = await this._wsClient.connect()
+    if (isSucc == false) {
+      this._clientOpts.onUnableToConnect(errMsg)
+      return this
+    }
+
     this._wsClient.listenMsg("ServerToClient", msg => {
       const callback = this._callbacks.get(msg.kind) || StockioClient._printError
       callback(msg)

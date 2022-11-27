@@ -14,6 +14,7 @@ ReactDOM.render(<App />, document.getElementById('app'));
 
   const stockioClient = await create({
       userId: UserId("my user id"),
+      onUnableToConnect: err => console.warn(err)
     })
 
   console.log("after create()")
