@@ -3,7 +3,7 @@ import { StockioClient } from "../../client/shared/clientCore"
 
 import { RoomId } from "../../client/shared/protocols/model"
 import { RoomDetailRes } from '../../client/shared/protocols/MsgServerToClient'
-import { EnterRandomRoomReq } from '../../client/shared/protocols/MsgClientToServer'
+import { CreateRoomReq, EnterRoomReq } from '../../client/shared/protocols/MsgClientToServer'
 import { setWatcher } from '../../utils/watch'
 
 const app = getApp<IAppOption>()
@@ -62,23 +62,30 @@ Page({
         imgUrl: ''
       }
     ],
-    enterRandomRoomReq: {},
+    enterRoomReq: {},
+    createRoomReq: {},
     roomId: ''
   },
 
   watch: {
-    enterRandomRoomReq(val: EnterRandomRoomReq) {
-      console.log('enterRandomRoomReq变化了，变化后的值是', val)
+    CreateRoomReq(val: CreateRoomReq) {
+      console.log('CreateRoomReq变化了，变化后的值是', val)
       // 准备对Coating文件进行修改
     }
   },
 
   onLoad: async function(options) {
-    stockioClient = app.globalData.stockioClient
+    console.log("bbbb")
+    
     setWatcher(this)
     if(options.roomId) {
-      // await this.enterRoom()
+      app.pageCallback = async () => {
+        console.log("aaa")
+        stockioClient = app.globalData.stockioClient
+        await this.enterRoom(options.roomId)
+      }
     } else {
+      stockioClient = app.globalData.stockioClient
       await this.createRoom()
     }
   },
@@ -101,10 +108,12 @@ Page({
 
   // 如果进入房间时带有RoomId，则视为加入房间
   enterRoom: async function(roomId: RoomId) {
+    console.log(roomId)
     await stockioClient?.onRoomDetail((res: RoomDetailRes) => {
-      this.setData({ enterRandomRoomReq: res })
+      this.setData({ enterRoomReq: res })
     })
-    await stockioClient?.sendReq({kind: "EnterRandomRoomReq", roomId: roomId})
+    await stockioClient?.sendReq({kind: "EnterRoomReq", roomId: roomId})
+    console.log(this.data.enterRoomReq)
   },
 
   // 如果进入房间时RoomId为空，则视为创建新房间
@@ -116,7 +125,7 @@ Page({
         roomId: res.roomId
       })
     })
-    await stockioClient?.sendReq({kind: "EnterRandomRoomReq"})
+    await stockioClient?.sendReq({kind: "CreateRoomReq"})
   },
 
   // 卸载页面时候，离开房间

@@ -8,16 +8,27 @@ App<IAppOption>({
   },
 
   async onLaunch() {
-    // 获取系统状态栏信息
-    await wx.getSystemInfo({ success: e => this.globalData.systemInfo = e })
+    const _this = this
+    new Promise(async (resolve, reject) => {
+      // 获取系统状态栏信息
+      await wx.getSystemInfo({ success: e => this.globalData.systemInfo = e })
 
-    // 开启动态监听globalData钩子
-    await this.observeGlobalData();
+      // 开启动态监听globalData钩子
+      await this.observeGlobalData();
+
+      // 自动登录检查
+      await autoAuth(this)
+      resolve(1)
+    }).then(() => {
+      if(_this.pageCallback) {
+        _this.pageCallback(1)
+      }
+    })
+    
   },
 
   onShow: function () {
-    // 自动登录检查
-    autoAuth(this)
+    
   },
 
   observeGlobalData() {
