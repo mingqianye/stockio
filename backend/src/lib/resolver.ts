@@ -82,8 +82,9 @@ function enterRoomFlow(userId: UserId, roomId: RoomId, entities: Immutable<Entit
           teamId: teamId
         }
       })
-      updateIfExists(draft.teams, teamId, teamDraft => {
-        teamDraft.status = {
+      draft.teams.set(teamId, {
+        id: teamId,
+        status: {
           type: 'IN_ROOM',
           roomId: roomId
         }
