@@ -23,7 +23,7 @@ export class StockioClient {
 
   async connect() {
     const {isSucc, errMsg} = await this._wsClient.connect()
-    if (isSucc == false) {
+    if (isSucc === false) {
       this._clientOpts.onUnableToConnect(errMsg)
       return this
     }
