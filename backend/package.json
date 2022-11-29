@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "fp-ts": "^2.13.1",
-    "immer": "^9.0.16",
+    "immutability-helper": "^3.1.1",
     "reselect": "^4.1.7",
     "rxjs": "^7.5.7",
     "ts-pattern": "^4.0.6",
