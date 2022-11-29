@@ -1,9 +1,9 @@
 import { Subject, Observable, Observer } from "rxjs"
 import { WsConnection, WsServer } from "tsrpc"
-import { UserId } from "../shared/protocols/model"
 import { MsgClientToServer } from "../shared/protocols/MsgClientToServer"
 import { MsgServerToClient } from "../shared/protocols/MsgServerToClient"
 import { serviceProto, ServiceType } from "../shared/protocols/serviceProto"
+import { UserId } from "./store"
 
 const wsServer = new WsServer<ServiceType>(serviceProto, { port: 3000 });
 
@@ -15,7 +15,7 @@ export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
   await wsServer.start()
 
   wsServer.listenMsg("ClientToServer", (call) => {
-    connectionMap.set(call.msg.userId, call.conn as WsConnection)
+    connectionMap.set(call.msg.userId as UserId, call.conn as WsConnection)
     reqSubject.next(call.msg)
   })
 
@@ -39,7 +39,8 @@ export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
 
 
   outgoingStream.subscribe(outgoingMsg => {
-    wsServer.broadcastMsg("ServerToClient", outgoingMsg.msg, outgoingMsg.userIds.map(id => connectionMap.get(id)!))
+    wsServer.broadcastMsg("ServerToClient", outgoingMsg.msg, 
+      Array.from(outgoingMsg.userIds.values()).map(id => connectionMap.get(id)!))
       .then(x => {
         if (x.isSucc) return;
         console.error(x.errMsg)
@@ -51,6 +52,6 @@ export const start = async (outgoingStream: Observable<OutGoingMsg>) => {
 export const reqObservable = reqSubject.asObservable()
 
 export type OutGoingMsg = {
-  userIds: UserId[]
+  userIds: Set<UserId>
   msg: MsgServerToClient
 }

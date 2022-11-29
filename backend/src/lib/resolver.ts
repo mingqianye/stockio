@@ -7,14 +7,15 @@ import { Entities, Game, GameId, getEntities, Room, RoomId, selectRoomByTeamId, 
 import { match, P } from "ts-pattern";
 import * as O from "fp-ts/lib/Option";
 import {array, io as IO} from "fp-ts";
-import { updateFn, updateRecords } from "./func";
+import { reduceToMap, updateFn, updateRecords } from "./func";
 import update from 'immutability-helper';
 import * as I from "fp-ts/lib/Identity";
+import { never } from "fp-ts/lib/Task";
 
 function pingFlow(userId: UserId, entities: Entities, now: IO.IO<Date>): FlowOutput {
   return {
     outgoingMsg: {
-      userIds: [userId],
+      userIds: new Set([userId]),
       msg: {
         kind: "PongRes",
         ts: now()
@@ -87,13 +88,18 @@ function roomDetailRes(entities: Entities, roomId: RoomId, now: IO.IO<Date>): Ou
   return pipe(
     selectUsersByRoomId(entities, roomId),
     userIds => ({
-      userIds: userIds,
+      userIds: new Set(userIds),
       msg: {
         kind: "RoomDetailRes",
         roomId: roomId,
-        teams: [{
-          userIds: userIds,
-        }],
+        teams: pipe( // group users by team, TODO: refactor me
+          userIds.map(uid => entities.users[uid]),
+          users => reduceToMap(users, (user) => {
+            return user.status.type === 'IN_TEAM' ? user.status.teamId : Object.keys(entities.teams)[0]
+          }),
+          grouped => Object.values(grouped),
+          groupedUserIds => groupedUserIds.map(teamUserIds => ({userIds: teamUserIds.map(u => u.id)})),
+        ),
         status: entities.rooms[roomId].status,
         ts: now()
       }
@@ -137,7 +143,7 @@ function startGameFlow(userId: UserId, entities: Entities, genUuid: IO.IO<string
 
 function tickRes(entities: Entities, gameId: GameId): OutGoingMsg {
   return {
-    userIds: selectUsersByGameId(entities, gameId),
+    userIds: new Set(selectUsersByGameId(entities, gameId)),
     msg: {
       kind: "TickRes",
       price: entities.games[gameId].price,
@@ -189,7 +195,7 @@ export type FlowOutput = {
 function errorFlow(userId: UserId, entities: Entities, err: string): FlowOutput {
   return {
     outgoingMsg: {
-      userIds: [userId],
+      userIds: new Set([userId]),
       msg: {
         kind: "ServerErrorRes",
         error: err,

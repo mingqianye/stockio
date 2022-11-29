@@ -24,3 +24,14 @@ export function updateRecords<K extends string, V>(
     }))
   )
 }
+
+export function reduceToMap<T, E extends string>(arr: T[], extractor: (t: T) => E): Record<E, T[]> {
+  return pipe(
+    arr,
+    array.map(x => ({key: extractor(x), value: x})),
+    array.reduce({} as Record<string, T[]>, (prev, cur) => {
+      prev[cur.key] = [...(prev[cur.key] || []), cur.value]
+      return prev
+    }),
+  )
+}
