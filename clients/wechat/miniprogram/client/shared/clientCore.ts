@@ -1,24 +1,27 @@
 import { BaseWsClient } from "tsrpc-base-client"
 import { UserId } from "./protocols/model";
 import { Req } from "./protocols/MsgClientToServer";
-import { PongRes, Res, RoomDetailRes, ServerErrorRes, TickRes } from "./protocols/MsgServerToClient";
+import { MsgServerToClient, PongRes, Res, RoomDetailRes, ServerErrorRes, TickRes } from "./protocols/MsgServerToClient";
 import { ServiceType } from "./protocols/serviceProto";
 
 export type ClientOpts = {
   userId: UserId
-  onUnableToConnect: (err: string) => any
+  onUnableToConnect: Callback
 }
 
 export class StockioClient {
   _wsClient: BaseWsClient<ServiceType>
   _clientOpts: ClientOpts
-  _callbacks: Map<(Res|ConnectionRes)['kind'], Callback> = new Map()
+  _callbacks: Map<(MsgServerToClient|ConnectionRes)['kind'], Callback> = new Map()
+  _catchAllCallback: (msg: MsgServerToClient|ConnectionRes) => unknown
 
   static _printError: Callback = res => console.error(`Received ${res} but onXXX function is not available.`)
 
   constructor(wsClient: BaseWsClient<ServiceType>, clientOpts: ClientOpts) {
     this._wsClient = wsClient
     this._clientOpts = clientOpts
+    this._callbacks.set("WebsocketDisconnectedRes", clientOpts.onUnableToConnect)
+    this._catchAllCallback = () => {}
   }
 
   async connect() {
@@ -57,6 +60,10 @@ export class StockioClient {
       userId: this._clientOpts.userId as UserId,
       ts: new Date()
     })
+  }
+
+  onRes(f: (res: MsgServerToClient|ConnectionRes) => unknown) {
+    this._catchAllCallback = f
   }
 
   onPongRes(f: (res: PongRes) => unknown) {

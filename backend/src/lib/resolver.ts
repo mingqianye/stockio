@@ -11,13 +11,13 @@ import { updateFn, updateRecords } from "./func";
 import update from 'immutability-helper';
 import * as I from "fp-ts/lib/Identity";
 
-function pingFlow(userId: UserId, entities: Entities): FlowOutput {
+function pingFlow(userId: UserId, entities: Entities, now: IO.IO<Date>): FlowOutput {
   return {
     outgoingMsg: {
       userIds: [userId],
       msg: {
         kind: "PongRes",
-        ts: new Date()
+        ts: now()
       }
     },
     newEntities: entities
@@ -39,33 +39,33 @@ function disconnectReqFlow(userId: UserId, entities: Entities): FlowOutput {
   }
 }
 
-function createRoomFlow(userId: UserId, entities: Entities): FlowOutput {
+function createRoomFlow(userId: UserId, entities: Entities, genUuid: IO.IO<string>, now: IO.IO<Date>): FlowOutput {
   return pipe(
-    IO.Do,
-    IO.bind("teamId", () => IO.of(uuid().slice(0, 5) as TeamId)),
-    IO.bind("roomId", () => IO.of(uuid().slice(0, 5) as RoomId)),
-    IO.bind("newEntities", ({teamId, roomId}) => IO.of(update(entities, {
+    I.Do,
+    I.bind("teamId", () => I.of(genUuid() as TeamId)),
+    I.bind("roomId", () => I.of(genUuid() as RoomId)),
+    I.bind("newEntities", ({teamId, roomId}) => I.of(update(entities, {
       users: { [userId]: { status: { $set: {type: 'IN_TEAM', teamId: teamId}}}},
       teams: { [teamId]: { $set: { id: teamId, status: { type: 'IN_ROOM', roomId: roomId }}}},
       rooms: { [roomId]: { $set: { id: roomId, status: 'WAITING'}}},
     }))),
-    IO.bind("outgoingMsg", ({newEntities, roomId}) => IO.of(roomDetailRes(newEntities, roomId))),
-  )()
+    I.bind("outgoingMsg", ({newEntities, roomId}) => I.of(roomDetailRes(newEntities, roomId, now))),
+  )
 }
 
-function enterRoomFlow(userId: UserId, roomId: RoomId, entities: Entities): FlowOutput {
+function enterRoomFlow(userId: UserId, roomId: RoomId, entities: Entities, genUuid: IO.IO<string>, now: IO.IO<Date>): FlowOutput {
   return pipe(
-    IO.Do,
-    IO.bind('teamId', () => IO.of(uuid().slice(0,5) as TeamId)),
-    IO.bind('newEntities', ({teamId}) => IO.of(update(entities, {
+    I.Do,
+    I.bind("teamId", () => I.of(genUuid() as TeamId)),
+    I.bind('newEntities', ({teamId}) => I.of(update(entities, {
       users: { [userId]: { status: { $set: {type: 'IN_TEAM', teamId: teamId}}}},
       teams: { $merge: { [teamId]: { id: teamId, status: { type: 'IN_ROOM', roomId: roomId }}}},
     }))),
-    IO.bind('outgoingMsg', ({newEntities}) => IO.of(roomDetailRes(newEntities, roomId)))
-  )()
+    I.bind('outgoingMsg', ({newEntities}) => I.of(roomDetailRes(newEntities, roomId, now)))
+  )
 }
 
-function leaveRoomFlow(userId: UserId, entities: Entities): FlowOutput {
+function leaveRoomFlow(userId: UserId, entities: Entities, now: IO.IO<Date>): FlowOutput {
   return pipe(
     O.Do,
     O.bind("roomId", () => selectRoomByUserId(entities, userId)),
@@ -74,7 +74,7 @@ function leaveRoomFlow(userId: UserId, entities: Entities): FlowOutput {
     }))),
     O.map(({newEntities, roomId}) => ({
       newEntities: newEntities,
-      outgoingMsg: roomDetailRes(newEntities, roomId)
+      outgoingMsg: roomDetailRes(newEntities, roomId, now)
     })),
     O.getOrElse((): FlowOutput => ({
       newEntities: entities,
@@ -83,7 +83,7 @@ function leaveRoomFlow(userId: UserId, entities: Entities): FlowOutput {
   )
 }
 
-function roomDetailRes(entities: Entities, roomId: RoomId): OutGoingMsg {
+function roomDetailRes(entities: Entities, roomId: RoomId, now: IO.IO<Date>): OutGoingMsg {
   return pipe(
     selectUsersByRoomId(entities, roomId),
     userIds => ({
@@ -95,19 +95,19 @@ function roomDetailRes(entities: Entities, roomId: RoomId): OutGoingMsg {
           userIds: userIds,
         }],
         status: entities.rooms[roomId].status,
-        ts: new Date()
+        ts: now()
       }
     })
   )
 }
 
-function startGameFlow(userId: UserId, entities: Entities): FlowOutput{
+function startGameFlow(userId: UserId, entities: Entities, genUuid: IO.IO<string>): FlowOutput{
   return pipe(
     O.Do,
     O.bind("teamId", () => selectTeamByUserId(entities, userId)),
     O.bind("roomId", ({teamId}) => selectRoomByTeamId(entities, teamId)),
     O.bind("allTeamIds", ({roomId}) => O.of(selectTeamsByRoomId(entities, roomId))),
-    O.bind("gameId", () => O.of(uuid().slice(0, 5) as GameId)),
+    O.bind("gameId", () => O.of(genUuid() as GameId)),
     O.bind("updatedTeams", ({allTeamIds, gameId}) => O.of(
       updateRecords(entities.teams, allTeamIds, (team: Team): Team => ({
         id: team.id,
@@ -181,7 +181,7 @@ function toArray<T>(t: T | T[]): T[] {
 
 
 //////////////////////////// Entrypoint
-type FlowOutput = {
+export type FlowOutput = {
   outgoingMsg: OutGoingMsg | OutGoingMsg[]
   newEntities: Entities
 }
@@ -200,15 +200,21 @@ function errorFlow(userId: UserId, entities: Entities, err: string): FlowOutput 
   }
 }
 
-function translate(req: MsgClientToServer | TimerTickReq, entities: Entities): FlowOutput {
+// export for testing only
+export function translate(
+  req: MsgClientToServer | TimerTickReq, 
+  entities: Entities,
+  genUuid: IO.IO<string>,
+  now: IO.IO<Date>
+  ): FlowOutput {
   return match(req)
-    .with({kind: "PingReq", userId: P.select()}, uid => pingFlow(uid as UserId, entities))
+    .with({kind: "PingReq", userId: P.select()}, uid => pingFlow(uid as UserId, entities, now))
     .with({kind: "ConnectReq", userId: P.select()}, uid => connectReqFlow(uid as UserId, entities))
     .with({kind: "DisconnectReq", userId: P.select()}, uid => disconnectReqFlow(uid as UserId, entities))
-    .with({kind: "CreateRoomReq", userId: P.select()}, uid => createRoomFlow(uid as UserId, entities))
-    .with({kind: "EnterRoomReq", userId: P.select('uid'), roomId: P.select('rid')}, ({uid, rid}) => enterRoomFlow(uid as UserId, rid as RoomId, entities))
-    .with({kind: "LeaveRoomReq", userId: P.select()}, uid => leaveRoomFlow(uid as UserId, entities))
-    .with({kind: "StartGameReq", userId: P.select()}, uid => startGameFlow(uid as UserId, entities))
+    .with({kind: "CreateRoomReq", userId: P.select()}, uid => createRoomFlow(uid as UserId, entities, genUuid, now))
+    .with({kind: "EnterRoomReq", userId: P.select('uid'), roomId: P.select('rid')}, ({uid, rid}) => enterRoomFlow(uid as UserId, rid as RoomId, entities, genUuid, now))
+    .with({kind: "LeaveRoomReq", userId: P.select()}, uid => leaveRoomFlow(uid as UserId, entities, now))
+    .with({kind: "StartGameReq", userId: P.select()}, uid => startGameFlow(uid as UserId, entities, genUuid))
     .with({kind: "OrderReq", userId: P.select()}, uid => errorFlow(uid as UserId, entities, 'Not implemented'))
     .with({kind: "TimerTickReq", ts: P.select()}, (ts) => timerTickFlow(entities, ts))
     .exhaustive()
@@ -219,7 +225,7 @@ export function resolve$(req$: Observable<MsgClientToServer>) {
     .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
 
   return merge(req$, timer$).pipe(
-    map(x => translate(x, getEntities())),
+    map(x => translate(x, getEntities(), () => uuid().slice(0, 5), () => new Date())),
     tap(flowOutput => setEntities(flowOutput.newEntities)),
     map(flowOutput => flowOutput.outgoingMsg),
     mergeMap(toArray))
