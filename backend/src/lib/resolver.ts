@@ -10,7 +10,6 @@ import {array, io as IO} from "fp-ts";
 import { reduceToMap, updateFn, updateRecords } from "./func";
 import update from 'immutability-helper';
 import * as I from "fp-ts/lib/Identity";
-import { never } from "fp-ts/lib/Task";
 
 function pingFlow(userId: UserId, entities: Entities, now: IO.IO<Date>): FlowOutput {
   return {
@@ -43,26 +42,26 @@ function disconnectReqFlow(userId: UserId, entities: Entities): FlowOutput {
 function createRoomFlow(userId: UserId, entities: Entities, genUuid: IO.IO<string>, now: IO.IO<Date>): FlowOutput {
   return pipe(
     I.Do,
-    I.bind("teamId", () => I.of(genUuid() as TeamId)),
-    I.bind("roomId", () => I.of(genUuid() as RoomId)),
-    I.bind("newEntities", ({teamId, roomId}) => I.of(update(entities, {
+    I.bind("teamId", () => genUuid() as TeamId),
+    I.bind("roomId", () => genUuid() as RoomId),
+    I.bind("newEntities", ({teamId, roomId}) => update(entities, {
       users: { [userId]: { status: { $set: {type: 'IN_TEAM', teamId: teamId}}}},
       teams: { [teamId]: { $set: { id: teamId, status: { type: 'IN_ROOM', roomId: roomId }}}},
       rooms: { [roomId]: { $set: { id: roomId, status: 'WAITING'}}},
-    }))),
-    I.bind("outgoingMsg", ({newEntities, roomId}) => I.of(roomDetailRes(newEntities, roomId, now))),
+    })),
+    I.bind("outgoingMsg", ({newEntities, roomId}) => roomDetailRes(newEntities, roomId, now)),
   )
 }
 
 function enterRoomFlow(userId: UserId, roomId: RoomId, entities: Entities, genUuid: IO.IO<string>, now: IO.IO<Date>): FlowOutput {
   return pipe(
     I.Do,
-    I.bind("teamId", () => I.of(genUuid() as TeamId)),
-    I.bind('newEntities', ({teamId}) => I.of(update(entities, {
+    I.bind("teamId", () => genUuid() as TeamId),
+    I.bind('newEntities', ({teamId}) => update(entities, {
       users: { [userId]: { status: { $set: {type: 'IN_TEAM', teamId: teamId}}}},
       teams: { $merge: { [teamId]: { id: teamId, status: { type: 'IN_ROOM', roomId: roomId }}}},
-    }))),
-    I.bind('outgoingMsg', ({newEntities}) => I.of(roomDetailRes(newEntities, roomId, now)))
+    })),
+    I.bind('outgoingMsg', ({newEntities}) => roomDetailRes(newEntities, roomId, now))
   )
 }
 
@@ -156,12 +155,12 @@ function tickRes(entities: Entities, gameId: GameId): OutGoingMsg {
 function timerTickFlow(entities: Entities, ts: Date): FlowOutput {
   return pipe(
     I.Do,
-    I.bind("gameIds", () => I.of(pipe(
+    I.bind("gameIds", () => pipe(
       Object.values(entities.games),
       array.filter(g => g.status === 'ACTIVE'),
       array.map(g => g.id)
-    ))),
-    I.bind("newEntities", ({gameIds}) => I.of(
+    )),
+    I.bind("newEntities", ({gameIds}) => 
       update(entities, {
         games: {$merge: updateRecords(entities.games, gameIds, (g: Game): Game => {
           return {
@@ -172,11 +171,10 @@ function timerTickFlow(entities: Entities, ts: Date): FlowOutput {
             ts: ts
           }
         })}
-      })
-    )),
-    I.bind("outgoingMsg", ({newEntities, gameIds}) => I.of(
+      })),
+    I.bind("outgoingMsg", ({newEntities, gameIds}) => 
       gameIds.map(gid => tickRes(newEntities, gid))
-    ))
+    )
   )
 }
 
@@ -211,8 +209,7 @@ export function translate(
   req: MsgClientToServer | TimerTickReq, 
   entities: Entities,
   genUuid: IO.IO<string>,
-  now: IO.IO<Date>
-  ): FlowOutput {
+  now: IO.IO<Date>): FlowOutput {
   return match(req)
     .with({kind: "PingReq", userId: P.select()}, uid => pingFlow(uid as UserId, entities, now))
     .with({kind: "ConnectReq", userId: P.select()}, uid => connectReqFlow(uid as UserId, entities))
@@ -231,7 +228,11 @@ export function resolve$(req$: Observable<MsgClientToServer>) {
     .pipe(map(value => ({kind: "TimerTickReq", count: value, ts: new Date()})))
 
   return merge(req$, timer$).pipe(
-    map(x => translate(x, getEntities(), () => uuid().slice(0, 5), () => new Date())),
+    map(x => translate(
+      x, 
+      getEntities(), 
+      () => uuid().slice(0, 5), 
+      () => new Date())),
     tap(flowOutput => setEntities(flowOutput.newEntities)),
     map(flowOutput => flowOutput.outgoingMsg),
     mergeMap(toArray))
