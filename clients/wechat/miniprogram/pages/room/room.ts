@@ -11,57 +11,6 @@ var stockioClient: StockioClient | undefined
 
 Page({
   data: {
-    userList: [
-      {
-        userid: 1,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 2,
-        name: ''
-      },
-      {
-        userid: 3,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 4,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 5,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 6,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 7,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 8,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 9,
-        name: '',
-        imgUrl: ''
-      },
-      {
-        userid: 10,
-        name: '',
-        imgUrl: ''
-      }
-    ],
     enterRoomReq: {},
     createRoomReq: {},
     roomId: ''
@@ -80,7 +29,6 @@ Page({
     setWatcher(this)
     if(options.roomId) {
       app.pageCallback = async () => {
-        console.log("aaa")
         stockioClient = app.globalData.stockioClient
         await this.enterRoom(options.roomId)
       }
@@ -110,7 +58,11 @@ Page({
   enterRoom: async function(roomId: RoomId) {
     console.log(roomId)
     await stockioClient?.onRoomDetail((res: RoomDetailRes) => {
-      this.setData({ enterRoomReq: res })
+      console.log("getting RoomDetails:", res)
+      this.setData({ 
+        enterRandomRoomReq: res,
+        roomId: res.roomId
+      })
     })
     await stockioClient?.sendReq({kind: "EnterRoomReq", roomId: roomId})
     console.log(this.data.enterRoomReq)

@@ -4,7 +4,8 @@ import autoAuth from "./utils/autoAuth"
 
 App<IAppOption>({
   globalData: {
-    userInfo: ""
+    userInfo: "",
+    connection: undefined
   },
 
   async onLaunch() {

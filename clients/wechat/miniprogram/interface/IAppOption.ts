@@ -5,7 +5,8 @@ export default interface IAppOption {
   globalData: {
     systemInfo?: WechatMiniprogram.GetSystemInfoSuccessCallbackResult,
     stockioClient?: StockioClient,
-    userInfo: string
+    userInfo: string,
+    connection: boolean | undefined,
   }
 
   eventQueue?: Array<any> | undefined 

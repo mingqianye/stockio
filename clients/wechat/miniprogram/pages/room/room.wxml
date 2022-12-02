@@ -3,13 +3,11 @@
 
   <view class="room-main">
     <view class="room-list">
-      <view class="list-item" wx:for="{{userList}}" wx:key="index" wx:for-item="user">
-        <view class="user-avater">
-          <image src="" />
-        </view>
-        <view class="user-name">
-          <text>{{user.name}}</text>
-        </view>
+      <view class="user-avater">
+        <image src="" />
+      </view>
+      <view class="user-name">
+        <text>{{user.name}}</text>
       </view>
     </view>
   </view>

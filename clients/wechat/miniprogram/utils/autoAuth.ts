@@ -17,11 +17,15 @@ const getUserInfo = async (_app: IAppOption) => {
 // 创建websocket连接
 const checkAuth = async (_app: IAppOption) => {
   await getUserInfo(_app)
-  const stockioClient: StockioClient = await create({ userId: UserId(_app.globalData.userInfo) })
-  stockioClient.onDisconnected(err => console.log("websocket is disconnected: ", err))
-  stockioClient.onReconnected(() => console.log("websocket is reconnected."))
-  _app.globalData.stockioClient = stockioClient
-  console.log(stockioClient)
+  const stockioClient: StockioClient = await create({ 
+    userId: UserId(_app.globalData.userInfo), 
+    onUnableToConnect: err => _app.globalData.connection = false
+  })
+  stockioClient.onDisconnected(err => _app.globalData.connection = false)
+  stockioClient.onReconnected(() => _app.globalData.connection = true)
+  // 连接成功后，初始化globalData.stockioClient
+  _app.globalData.connection == undefined && (_app.globalData.stockioClient = stockioClient)
+  // console.log("============", _app.globalData.stockioClient)
 }
 
 // 自动连接websocket的main方法
