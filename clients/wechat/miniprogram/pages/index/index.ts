@@ -2,8 +2,7 @@
 
 Page({
   data: {
-    joinRoomShow: false,  // 展示输入房间ID的图层
-    value: '',
+    joinRoomShow: false
   },
 
   onLoad: function() {},
@@ -16,10 +15,8 @@ Page({
   // 点击创建房间
   onCreateRoomClicked: function() { wx.navigateTo({ url: '../room/room' }) },
 
-  // 展示加入房间图层
-  onJoinRoomShow: function() { this.setData({ joinRoomShow: true }) },
-
-  // 展示加入房间图层
-  onJoinRoomHide: function() { this.setData({ joinRoomShow: false }) },
+  // 点击加入房间
+  onJoinRoomClicked: function() { this.selectComponent("#joinRoomContent").onJoinRoomShow() },
+  
 
 })

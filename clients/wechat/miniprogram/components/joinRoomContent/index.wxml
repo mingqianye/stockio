@@ -1,0 +1,19 @@
+<van-overlay show="{{ joinRoomShow }}" bind:click="onJoinRoomHide">
+  <view class="wrapper">
+    <view class="block" catch:tap="noop">
+      <view class="title">输入朋友的房间号和密码</view>
+      <van-cell-group>
+        <van-field
+          value="{{ username }}"
+          type="number"
+        />
+
+        <van-field
+          value="{{ password }}"
+          type="password"
+          border="{{ false }}"
+        />
+      </van-cell-group>
+    </view>
+  </view>
+</van-overlay>

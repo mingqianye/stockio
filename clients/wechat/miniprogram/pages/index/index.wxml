@@ -19,7 +19,7 @@
           <text>创建房间</text>
         </view>
       </view>
-      <view class="join-room-btn" bindtap="onJoinRoomShow">
+      <view class="join-room-btn" bindtap="onJoinRoomClicked">
         <view>
           <text>加入房间</text>
         </view>
@@ -48,26 +48,8 @@
   </view>
 </view>
 
-<van-overlay show="{{ joinRoomShow }}" bind:click="onJoinRoomHide">
-  <view class="join-room-wrapper">
-    <view class="join-room-block" catch:tap="noop">
-      <view>输入朋友的房间号和密码</view>
-      <van-cell-group>
-        <van-field
-          value="{{ username }}"
-          type="number"
-          placeholder="请输入房间ID"
-        />
+<!-- 加入房间遮罩层 -->
+<joinRoomContent id="joinRoomContent" />
 
-        <van-field
-          value="{{ password }}"
-          type="password"
-          placeholder="请输入房间密码"
-          border="{{ false }}"
-        />
-      </van-cell-group>
-    </view>
-  </view>
-</van-overlay>
 
 <view id="connection"></view>
