@@ -1,91 +1,15 @@
 
-.title {
-  width: 100%;
-  height: 65px;
-  text-align: center;
-  padding: 15px 0 0 0;
+// 所有按钮居中
+.main {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
 }
 
-.title image {
-  width: 200px;
-  height: 50px;
-  margin: auto 0;
-}
 
-// 登录信息卡
-.userInfo-container {
-  text-align: center;
-}
-.userInfo-btn {
-  width: 680rpx;
-  height: 140px;
-  vertical-align: middle;
-  background: linear-gradient(to right,#1D30A9,#0A1A72);
-  margin: 10px auto;
-  // box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-  border-radius: 5px;
-  text-align: center;
-  /* margin-top: 20px; */
-}
-.userInfo-nickName {
-  line-height: 34px;
-  color: #fff;
-  font-size: 14px;
-}
-.userInfo-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin: 0px auto;
-  border: 3px solid #fff;
-}
-.userInfo-detail {
-  padding: 10px 10px;
-}
-.userInfo-gold {
-  display: inline-flex;
-}
-.userInfo-gold image {
-  width: 18px;
-  height: 18px;
-}
-.userInfo-gold-text {
-  padding-left: 5px;
-  font-size: 14px;
-  color: #fff;
-  line-height: 20px;
-}
-
-// 创建房间
-.roomBtnContainer {
-  text-align: center;
-}
-.roomBtn {
-  text-align: center;
-  display: inline-block;
-  margin: 20rpx;
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-  color: white;
-  border-radius: 5px;
-  overflow: hidden;
-}
-.roomBtn view {
-  background: linear-gradient(to right,#ff5757,#b30101);
-  height: 200rpx;
-  width: 680rpx;
-  line-height: 200rpx;
-  vertical-align: middle;
-  font-size: 20px;
-  font-weight: bolder;
-  letter-spacing: 18rpx;
-}
-
-/* 按钮 */
-.mainBtn {
-  text-align: center;
-}
-.commonBtnView{
+// 通用
+.btn{
   text-align: center;
   display: inline-block;
   margin: 20rpx;
@@ -93,33 +17,20 @@
   color: white;
   border-radius: 5px;
 }
+
+// 匹配赛
 .btnImg{
   width: 100%;
   display: block;
 }
-.commonBtnView image{
-  text-align: left;
-  vertical-align:middle;
-  width:55%;
-  height: 220rpx;
-}
-.commonBtnView text{
-  font-size: 42rpx;
-  font-weight: bold;
-  letter-spacing: 18rpx;
-  height: 80rpx;
-  line-height: 80rpx;
-  display: block;
-  width: 100%;
-}
-.btn-top{
+.match{
   background: linear-gradient(to right,#ff5757,#b30101);
   height: 400rpx;
   width: 680rpx;
   line-height: 400rpx;
   vertical-align: middle;
 }
-.btn-top .btnImg{
+.match .btnImg{
   text-align: center;
   width: 60%;
   vertical-align:middle;
@@ -127,11 +38,12 @@
   height: 400rpx;
   line-height: 400rpx;
 }
-.btn-top image{
+.match image{
   width:90%;
   height: 300rpx;  
+  margin-top: 50rpx;
 }
-.btn-top text{
+.match text{
   height: 300rpx;
   line-height: 100rpx;
   padding-right: 10%;
@@ -142,58 +54,87 @@
   width: 10%;
   display: inline-block;
 }
-.subBtn {
-  display: inline-flex;
+
+// 创建房间
+.create-room-btn {
   text-align: center;
-  margin: 0 40rpx;
+  display: inline-block;
+  margin: 20rpx;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  color: white;
+  border-radius: 5px;
+  overflow: hidden;
 }
-.subBtn-left{
-  background: linear-gradient(to right,#ffe56f,#faa922);
-  background-color: #faa922;
-  height: 300rpx;
-  width: 300rpx;
-}
-.subBtn-right{
-  background: linear-gradient(to right,#e6e6e6,#959595);
-  background-color: #d6d4d7;
-  height: 300rpx;
-  width: 300rpx;
+.create-room-btn view {
+  background: linear-gradient(to right,#ff5757,#b30101);
+  height: 200rpx;
+  width: 320rpx;
+  line-height: 200rpx;
+  vertical-align: middle;
+  font-size: 20px;
+  font-weight: bolder;
+  letter-spacing: 18rpx;
 }
 
-/* 底部 */
-.footer-container {
-  
-  
-  padding: 20px 75rpx 0 75rpx;
-}
-.footer {
-  width: 100%;
-  display: inline-flex;
+// 加入房间
+.join-room-btn {
   text-align: center;
+  display: inline-block;
+  margin: 20rpx;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  color: white;
+  border-radius: 5px;
+  overflow: hidden;
 }
-.footer-btn {
-  width: 200rpx;
-  height: 50rpx;
+.join-room-btn view {
+  background: linear-gradient(to right,#ff5757,#b30101);
+  height: 200rpx;
+  width: 320rpx;
+  line-height: 200rpx;
+  vertical-align: middle;
+  font-size: 20px;
+  font-weight: bolder;
+  letter-spacing: 18rpx;
 }
-.footer button{
-  border: 0rpx;
-  margin: 0;
-  padding: 0;
-  width: 190rpx;
+
+// 战术点评、数据分析、用户信息
+.forum-btn, .analysis-btn, .user-btn {
+  text-align: center;
+  display: inline-block;
+  margin: 20rpx;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  color: white;
+  border-radius: 5px;
+  overflow: hidden;
 }
-.footer image {
-  width: 18px;
-  height: 18px;
-  background-color: white;
-  border: 2rpx solid #faa922;
-  padding: 20rpx;
-  border-radius: 50%;
-  margin: 0 50rpx;
-  vertical-align: top;
+.forum-btn view, .analysis-btn view, .user-btn view {
+  background: linear-gradient(to right,#ff5757,#b30101);
+  height: 100rpx;
+  width: 100rpx;
+  padding: 50rpx;
 }
-.footer button::after {
-  border: 0; 
-  padding: 0;
-  margin: 0;
-  width: 190rpx
+.forum-btn text, .analysis-btn text, .user-btn text {
+  line-height: 50rpx;
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: bolder;
+  letter-spacing: 16rpx;
+  word-wrap:break-word;
+}
+
+// 遮罩层
+.join-room-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.join-room-block {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(to bottom,#b6b6b6,#e0e0e0,#ffffff);
+  border: 3px solid #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.6), 0 6px 20px 0 rgba(0,0,0,0.19);
 }

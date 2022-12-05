@@ -1,55 +1,73 @@
 <view class="container">
-  <view class="userInfo-container">
-    <view class="userInfo-btn">
-      <!-- <view class="userInfo-nickName">
-        <open-data type="userNickName"></open-data>
-      </view>
-      <view class="userInfo-avatar">
-        <open-data type="userAvatarUrl" ></open-data>
-      </view> -->
-    </view>
-  </view>
-
-
-  <!-- 主按钮 -->
-  <view class="mainBtn">
-    <view class="commonBtnView btn-top" bindtap="onTeamClicked">
-      <view>
-        <view class="btnImg">
-          <image src="../../resources/images/index/stock.png" mode="aspectFit"></image>
+  <view class="main">
+    <!-- 匹配赛 -->
+    <view class="row1">
+      <view class="btn match" bindtap="onTeamClicked">
+        <view>
+          <view class="btnImg">
+            <image src="../../resources/images/index/stock.png" mode="aspectFit"></image>
+          </view>
+          <text>匹配赛</text>
         </view>
-        <text>排位赛</text>
       </view>
     </view>
-  </view>
-  
-  <!-- 房间 -->
-  <view class="roomBtnContainer">
-    <view class="roomBtn" bindtap="onRoomClicked">
-      <view><text>创建房间</text></view>
-      
-    </view>
-  </view>
-  <!-- 次按钮
-  <view class="subBtn">
-    <view class='commonBtnView subBtn-left' open-type="getUserInfo" bindgetuserinfo="goRank">
-      <view>
-        <view class="btnImg">
-          <image src="../../resources/images/index/rankCup.png" mode="aspectFit"></image>
+    
+    <!-- 房间 -->
+    <view class="row2">
+      <view class="create-room-btn" bindtap="onCreateRoomClicked">
+        <view>
+          <text>创建房间</text>
         </view>
-        <text>排行榜</text>
+      </view>
+      <view class="join-room-btn" bindtap="onJoinRoomShow">
+        <view>
+          <text>加入房间</text>
+        </view>
       </view>
     </view>
 
-    <view class='commonBtnView subBtn-right' open-type="getUserInfo" bindgetuserinfo="goNews">
-      <view>
-        <view class="btnImg">
-          <image src="../../resources/images/index/news.png" mode="aspectFit"></image>
+    <!-- 数据及信息 -->
+    <view class="row3">
+      <view class="forum-btn" bindtap="onRoomClicked">
+        <view>
+          <text>战术点评</text>
         </view>
-        <text>财经速报</text>
+      </view>
+      <view class="analysis-btn" bindtap="onRoomClicked">
+        <view>
+          <text>数据分析</text>
+        </view>
+      </view>
+      <view class="user-btn" bindtap="onRoomClicked">
+        <view>
+          <text>用户信息</text>
+        </view>
       </view>
     </view>
-  </view> -->
+    
+  </view>
 </view>
+
+<van-overlay show="{{ joinRoomShow }}" bind:click="onJoinRoomHide">
+  <view class="join-room-wrapper">
+    <view class="join-room-block" catch:tap="noop">
+      <view>输入朋友的房间号和密码</view>
+      <van-cell-group>
+        <van-field
+          value="{{ username }}"
+          type="number"
+          placeholder="请输入房间ID"
+        />
+
+        <van-field
+          value="{{ password }}"
+          type="password"
+          placeholder="请输入房间密码"
+          border="{{ false }}"
+        />
+      </van-cell-group>
+    </view>
+  </view>
+</van-overlay>
 
 <view id="connection"></view>
