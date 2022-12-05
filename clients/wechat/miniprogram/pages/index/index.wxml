@@ -28,17 +28,17 @@
 
     <!-- 数据及信息 -->
     <view class="row3">
-      <view class="forum-btn" bindtap="onRoomClicked">
+      <view class="forum-btn" bindtap="onForumClicked">
         <view>
           <text>战术点评</text>
         </view>
       </view>
-      <view class="analysis-btn" bindtap="onRoomClicked">
+      <view class="analysis-btn" bindtap="onAnalysisClicked">
         <view>
           <text>数据分析</text>
         </view>
       </view>
-      <view class="user-btn" bindtap="onRoomClicked">
+      <view class="user-btn" bindtap="onUserClicked">
         <view>
           <text>用户信息</text>
         </view>

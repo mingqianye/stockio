@@ -1,4 +1,4 @@
-// components/joinRoomContent/index.ts
+
 Component({
 
   properties: {},

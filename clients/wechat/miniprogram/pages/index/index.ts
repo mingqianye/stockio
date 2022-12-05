@@ -1,9 +1,6 @@
-// index.ts
 
 Page({
-  data: {
-    joinRoomShow: false
-  },
+  data: {},
 
   onLoad: function() {},
 
@@ -17,6 +14,14 @@ Page({
 
   // 点击加入房间
   onJoinRoomClicked: function() { this.selectComponent("#joinRoomContent").onJoinRoomShow() },
-  
 
+  // 点击战术点评
+  onForumClicked: function() {},
+
+  // 点击数据分析
+  onAnalysisClicked: function() {},
+
+  // 点击用户信息
+  onUserClicked: function() {},
+  
 })
