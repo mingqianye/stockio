@@ -4,6 +4,7 @@ import { StockioClient } from "../../client/shared/clientCore"
 import { RoomId } from "../../client/shared/protocols/model"
 import { RoomDetailRes } from '../../client/shared/protocols/MsgServerToClient'
 import { CreateRoomReq, EnterRoomReq } from '../../client/shared/protocols/MsgClientToServer'
+import { IPersonalCard, _personalCard } from './roomCoating'
 import { setWatcher } from '../../utils/watch'
 
 const app = getApp<IAppOption>()
@@ -13,7 +14,8 @@ Page({
   data: {
     enterRoomReq: {},
     createRoomReq: {},
-    roomId: ''
+    roomId: '',
+    personalCard: {}
   },
 
   watch: {
@@ -38,7 +40,7 @@ Page({
     }
   },
 
-  onShow: function() {},
+  onShow: function() { this.setData({ personalCard: _personalCard}) },
 
   onUnload: async function() { await this.leaveRoom() },
 

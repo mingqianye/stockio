@@ -1,7 +1,13 @@
-<view class="container">
+<view class="room-container">
   <view class="room-title">房间对战</view>
 
-  <view class="room-main">
+  <!-- 个人信息卡片 -->
+  <roomPersonalCard personalCard="{{ personalCard }}"></roomPersonalCard>
+  
+  <!-- 玩家列表 -->
+  <roomPlayerList></roomPlayerList>
+
+  <!-- <view class="room-main">
     <view class="room-list">
       <view class="user-avater">
         <image src="" />
@@ -16,5 +22,8 @@
   <div class="room-footer">
     <view class="room-btn" bindtap="onRoom">开始比赛</view>
     <view class="room-btn" bindtap="joinRoomClicked">加入房间</view>
-  </div>
+  </div> -->
 </view>
+
+
+

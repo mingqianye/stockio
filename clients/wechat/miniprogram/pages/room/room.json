@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "roomPersonalCard": "../../components/roomPersonalCard/index",
+    "roomPlayerList": "../../components/roomPlayerList/index"
+  }
 }

@@ -1,0 +1,24 @@
+<view class="personal-card-container">
+  <view class="user-avatar">
+    <view class="avatar-view">
+      <image src="{{ personalCard.avatarUrl }}"></image>
+    </view>
+    <view class="name-view">
+      <view>{{ personalCard.name }}</view>
+    </view>
+    <view class="level-view">
+      <view class="level-image-view">
+        <image src="{{ personalCard.levelUrl }}"></image>
+      </view>
+      <view class="level-name">{{ personalCard.level }}</view>
+    </view>
+  </view>
+  <view class="user-data">
+    <view>胜率：{{ personalCard.battleData.winningPerc }}</view>
+    <view>胜率：{{ personalCard.battleData.winningPerc }}</view>
+    <view>胜率：{{ personalCard.battleData.winningPerc }}</view>
+    <view>胜率：{{ personalCard.battleData.winningPerc }}</view>
+    <view>胜率：{{ personalCard.battleData.winningPerc }}</view>
+  </view>
+  <view class="user-chart">2</view>
+</view>
