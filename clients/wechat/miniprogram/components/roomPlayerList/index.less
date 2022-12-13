@@ -1,1 +1,77 @@
-/* components/roomPlayerList/index.wxss */
+.room-player-list-container {
+  border: 3rpx solid #c8c8c8;
+}
+.room-player-list-main {
+  padding: 20rpx;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+// 玩家栏
+.playerItem {
+  display: inline-flex;
+  height: 120rpx;
+  width: 100%;
+}
+// 玩家序号
+.player-index {
+  line-height: 120rpx;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #977f5b;
+  width: 60rpx;
+}
+// 头像
+.avatar-view {
+  margin: 20rpx 40rpx 20rpx 10rpx;
+  height: 80rpx;
+  border: 2rpx solid #f7c377;
+  border-radius: 50%;
+}
+.avatar-view .avatar-img {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+// 昵称
+.player-name {
+  line-height: 30rpx;
+  font-size: 24rpx;
+  margin-top: 25rpx;
+  width: 300rpx;
+  overflow: hidden;
+}
+// 等级
+.level-image-view {
+  display: inline-block;
+  margin-right: 6rpx;
+}
+.level-image-view .level-img {
+  width: 20rpx;
+  height: 20rpx;
+}
+.level-name {
+  display: inline-block;
+  font-size: 24rpx;
+}
+// 动作
+.action-btn {
+  width: 100rpx;
+  height: 40rpx;
+  background-color: #eab25d;
+  margin: 40rpx 0;
+  text-align: center;
+  color: #fff;
+  font-size: 22rpx;
+  line-height: 40rpx;
+  border-radius: 5rpx;
+}
+// 统计
+.summary {
+  font-size: 22rpx;
+  text-align: right;
+  padding: 0 20rpx;
+  line-height: 50rpx;
+  border-top: 3rpx solid #c8c8c8;
+}

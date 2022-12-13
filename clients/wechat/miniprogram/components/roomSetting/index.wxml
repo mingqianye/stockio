@@ -1,0 +1,21 @@
+<view class="room-setting-container">
+  <view class="room-setting-btn" bindtap="onRoomSettingShow">房间设置</view>
+  <view class="room-start">开始游戏</view>
+</view>
+
+<van-overlay show="{{ roomSettingShow }}" bind:click="onRoomSettingHide">
+  <view class="wrapper">
+    <view class="block" catch:tap="noop">
+      <view class="line">
+        <view class="title">房间ID：</view>
+        <view class="room-id-text">{{ roomId }}</view>
+      </view>
+      <view class="line">
+        <view class="title">密码设置：</view>
+        <input class="password-input" bindinput="bindInput" maxlength="6" placeholder="请输入6位密码" />
+      </view>
+      <view class="line tips">* 密码可以为空</view>
+      <view class="setting-btn">设置</view>
+    </view>
+  </view>
+</van-overlay>

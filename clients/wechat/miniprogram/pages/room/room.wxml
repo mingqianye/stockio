@@ -1,29 +1,31 @@
 <view class="room-container">
-  <view class="room-title">房间对战</view>
 
   <!-- 个人信息卡片 -->
-  <roomPersonalCard personalCard="{{ personalCard }}"></roomPersonalCard>
-  
-  <!-- 玩家列表 -->
-  <roomPlayerList></roomPlayerList>
-
-  <!-- <view class="room-main">
-    <view class="room-list">
-      <view class="user-avater">
-        <image src="" />
-      </view>
-      <view class="user-name">
-        <text>{{user.name}}</text>
-      </view>
+  <view class="room-personal-card">
+    <roomPersonalCard wx:if="{{ cardStatus=='personal' }}" personalCard="{{ personalCard }}"></roomPersonalCard>
+    <roomTeamCard wx:if="{{ cardStatus=='team' }}" teamPlayerList="{{ teamPlayerList }}"></roomTeamCard>
+    <view wx:if="{{ cardStatus!='personal' }}" class="left-tab" bindtap="onPersonalCardClicked">
+      <image class="left-tab-img" src="../../resources/images/public/right-arraw.png"></image>
+    </view>
+    <view wx:if="{{ cardStatus!='team' }}" class="right-tab" bindtap="onTeamCardClicked">
+      <image class="right-tab-img" src="../../resources/images/public/left-arraw.png"></image>
     </view>
   </view>
   
+  <!-- 玩家列表 -->
+  <view class="room-player-list">
+    <roomPlayerList playerList="{{ playerList }}" roomRole="{{ roomRole }}"></roomPlayerList>
+  </view>
   
-  <div class="room-footer">
-    <view class="room-btn" bindtap="onRoom">开始比赛</view>
-    <view class="room-btn" bindtap="joinRoomClicked">加入房间</view>
-  </div> -->
 </view>
 
-
+<view class="footer">
+  <view class="footer-first-line" wx:if="{{ roomRole=='master' }}">
+    <roomSetting roomId="{{ roomId }}"></roomSetting>
+  </view>
+  <view class="footer-second-line">
+    <chat class="chat"></chat>
+    <roomShareApp></roomShareApp>
+  </view>
+</view>
 

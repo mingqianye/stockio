@@ -1,8 +1,11 @@
 .personal-card-container {
-  border: 6rpx solid #c8c8c8;
+  border: 3rpx solid #c8c8c8;
+  padding: 30rpx 0;
+}
+.card-main {
   display: inline-flex;
-  width: 680rpx;
-  height: 350rpx;
+  width: 100%;
+  height: 240rpx;
 }
 
 .user-avatar {
@@ -10,8 +13,11 @@
   align-self: center;
 }
 .user-data {
-  width: 220rpx;
+  width: 160rpx;
   align-self: center;
+  line-height: 40rpx;
+  font-size: 24rpx;
+  padding: 0 20rpx;
 }
 .user-chart {
   width: 240rpx;
@@ -22,18 +28,21 @@
   margin: auto;
   width: 140rpx;
   height: 140rpx;
-  border: 5rpx solid #c8c8c8;
+  // border: 5rpx solid #c8c8c8;
 }
-.avatar-view image {
+.avatar-view .avatar-img {
   width: 140rpx;
   height: 140rpx;
+  border-radius: 50%;
 }
 // 昵称
 .name-view {
   margin: auto;
   text-align: center;
-  font-size: 30rpx;
+  font-size: 26rpx;
   margin-top: 20rpx;
+  width: 100%;
+  overflow: hidden;
 }
 // 等级
 .level-view {
@@ -46,7 +55,7 @@
   display: inline-block;
   margin-right: 10rpx;
 }
-.level-image-view image {
+.level-image-view .level-img {
   width: 20rpx;
   height: 20rpx;
 }
@@ -54,3 +63,16 @@
   display: inline-block;
   font-size: 24rpx;
 }
+
+.randar-chart {
+  width: 100px;
+  height: 100px;
+}
+.user-chart {
+  position: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+} 

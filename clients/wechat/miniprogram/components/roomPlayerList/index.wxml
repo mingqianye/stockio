@@ -1,2 +1,28 @@
-<!--components/roomPlayerList/index.wxml-->
-<text>components/roomPlayerList/index.wxml</text>
+<view class="room-player-list-container">
+  <!-- 列表 -->
+  <view class="room-player-list-main" style="height: {{ listHeight }}px">
+    <view class="playerItem" wx:for="{{ playerList }}" wx:key="index" wx:for-item="item">
+      <view class="player-index">{{ index + 1 }}</view>
+      <view class="avatar-view">
+        <image class="avatar-img" src="{{ item.avatarUrl }}"></image>
+      </view>
+      <view>
+        <view class="player-name">{{ item.name}}</view>
+        <view class="player-level">
+          <view class="level-image-view">
+            <image class="level-img" src="{{ item.levelUrl }}"></image>
+          </view>
+          <view class="level-name">{{ item.level }}</view>
+        </view>
+      </view>
+      <view>
+        <view class="action" wx:if="{{ roomRole }}">
+          <view class="action-btn" wx:if="{{ item.roomRole!='master' }}">离开</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <!-- 统计 -->
+  <view class="summary">共{{ playerList.length }}人</view>
+
+</view>

@@ -1,46 +1,78 @@
-page {
-  background-color: #fff;
+.team-container {
+  padding: 30rpx;
 }
 
-.team-title {
+.team-card {
+  margin-top: 100rpx;
+}
+
+
+// 底部
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+}
+.footer-first-line, .footer-second-line {
+  display: inline-flex;
+}
+
+// 房间信息悬浮按钮
+.left-tab {
+  width: 30rpx;
+  height: 60rpx;
+  background-color: #c8c8c8;
+  position: fixed;; 
+  top: 250rpx;
+  left: 30rpx;
+  border-radius: 0 30rpx 30rpx 0;
+}
+.right-tab {
+  width: 30rpx;
+  height: 60rpx;
+  background-color: #c8c8c8;
+  position: fixed;; 
+  top: 250rpx;
+  right: 30rpx;
+  border-radius: 30rpx 0 0 30rpx;
+}
+.left-tab-img {
+  width: 20rpx;
+  height: 20rpx;
+  margin-top: 20rpx;
+}
+.right-tab-img {
+  width: 20rpx;
+  height: 20rpx;
+  margin-top: 20rpx;
+  margin-left: 8rpx;
+}
+
+// 聊天记录
+.team-chat {
+  border: 3rpx solid #c8c8c8;
+  margin: 30rpx 0;
+  height: 300rpx;
   width: 100%;
-  line-height: 60px;
-  display: block;
-  text-align: center;
-  font-size: 20px;
-  font-weight: bolder;
-  color: #25266F;
 }
 
-.team-main {
-  height: 240px;
+// 广告
+.ad-view {
+  border: 3rpx solid #c8c8c8;
+  height: 150rpx;
+  width: 100%;
+  text-align: center;
+  line-height: 150rpx;
 }
 
-// 用户信息
-.user-avater {
-  margin: auto;
-  margin-top: 80px;
-  width: 80px;
-  height: 80px;
-  border: 4px solid #25266F;
-}
-.user-name {
+// 开始对战
+.start {
+  margin: 30rpx auto;
   text-align: center;
-  line-height: 30px;
-  color: #25266F;
-  font-size: 14px;
-}
-
-.team-footer {
-  // width: 750rpx;
-}
-.team-btn {
-  margin: auto;
-  text-align: center;
-  line-height: 50px;
-  width: 200px;
-  color: #fff;
-  font-weight: bolder;
-  border-radius: 25px;
-  background-color: #2C2BAA;
+  width: 300rpx;
+  background-color: burlywood;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 5rpx;
+  font-size: 26rpx;
 }

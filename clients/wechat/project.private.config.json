@@ -5,7 +5,7 @@
     "compileHotReLoad": true,
     "urlCheck": false
   },
-  "libVersion": "2.8.3",
+  "libVersion": "2.9.5",
   "condition": {
     "miniprogram": {
       "list": [
@@ -13,6 +13,13 @@
           "name": "",
           "pathName": "pages/room/room",
           "query": "roomId=2332a",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "",
+          "pathName": "pages/team/team",
+          "query": "",
           "launchMode": "default",
           "scene": null
         }

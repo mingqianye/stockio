@@ -1,6 +1,7 @@
 import IAppOption from "../../interface/IAppOption";
 import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
 import { StockioClient } from "../../client/shared/clientCore";
+import { _personalCard, _teamPlayerList } from './teamCoating'
 
 const app = getApp<IAppOption>()
 let stockioClient: StockioClient
@@ -9,7 +10,14 @@ Page({
   stockioClient: StockioClient,
 
   data: {
-    roomDetailRes: {}
+    // 请求
+    roomDetailRes: {},
+    // 需要获取的值
+    teamId: '',
+    // 渲染层
+    personalCard: {},
+    // 一般动画
+    cardStatus: 'personal',
   },
 
   onLoad() {
@@ -18,6 +26,12 @@ Page({
 
   onShow() {
     stockioClient = app.globalData.stockioClient
+
+    // 初始化
+    this.setData({
+      personalCard: _personalCard,
+      teamPlayerList: _teamPlayerList,
+    })
   },
 
   async onRoom() {
@@ -34,6 +48,10 @@ Page({
     wx.navigateTo({
       url: '../queue/queue?roomId=' + this.data.roomDetailRes.roomId,
     })
-  }
+  },
+
+  onPersonalCardClicked: function() { this.setData({ cardStatus: 'personal' }) },
+
+  onTeamCardClicked: function() { this.setData({ cardStatus: 'team' }) },
 
 })

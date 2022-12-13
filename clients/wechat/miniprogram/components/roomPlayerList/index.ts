@@ -1,22 +1,17 @@
-// components/roomPlayerList/index.ts
+import IAppOption from "../../interface/IAppOption"
+const app = getApp<IAppOption>()
+
 Component({
-  /**
-   * 组件的属性列表
-   */
+
   properties: {
-
+    playerList: Array,
+    roomRole: String,
   },
 
-  /**
-   * 组件的初始数据
-   */
   data: {
-
+    listHeight: app.globalData.systemInfo.windowHeight-(720*app.globalData.systemInfo.windowWidth/750)-app.globalData.systemInfo.statusBarHeight
   },
 
-  /**
-   * 组件的方法列表
-   */
   methods: {
 
   }

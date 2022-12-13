@@ -4,30 +4,30 @@ import { StockioClient } from "../../client/shared/clientCore"
 import { RoomId } from "../../client/shared/protocols/model"
 import { RoomDetailRes } from '../../client/shared/protocols/MsgServerToClient'
 import { CreateRoomReq, EnterRoomReq } from '../../client/shared/protocols/MsgClientToServer'
-import { IPersonalCard, _personalCard } from './roomCoating'
+import { _personalCard, _playerList, _teamPlayerList } from './roomCoating'
 import { setWatcher } from '../../utils/watch'
 
 const app = getApp<IAppOption>()
 var stockioClient: StockioClient | undefined
 
+
 Page({
   data: {
+    // 请求
     enterRoomReq: {},
     createRoomReq: {},
+    // 需要获取的值
     roomId: '',
-    personalCard: {}
-  },
-
-  watch: {
-    CreateRoomReq(val: CreateRoomReq) {
-      console.log('CreateRoomReq变化了，变化后的值是', val)
-      // 准备对Coating文件进行修改
-    }
+    teamId: '',
+    roomRole: 'master',
+    // 渲染层
+    personalCard: {},
+    playerList: {},
+    // 一般动画
+    cardStatus: 'personal',
   },
 
   onLoad: async function(options) {
-    console.log("bbbb")
-    
     setWatcher(this)
     if(options.roomId) {
       app.pageCallback = async () => {
@@ -38,21 +38,36 @@ Page({
       stockioClient = app.globalData.stockioClient
       await this.createRoom()
     }
+    console.log(app.globalData.systemInfo)
   },
 
-  onShow: function() { this.setData({ personalCard: _personalCard}) },
+  onShow: function() { 
+    this.setData({
+      personalCard: _personalCard,
+      playerList: _playerList,
+      teamPlayerList: _teamPlayerList,
+    })
+  },
 
   onUnload: async function() { await this.leaveRoom() },
 
-  onShareAppMessage: function (res) {
+  // 当前页面分享，包括组件中的分享
+  onShareAppMessage: function (res: any) {
     if (res.from === 'button') {
       // 来自页面内转发按钮，如：<button open-type="share"></button>
-      console.log(res.target)
+      console.log(res.target.dataset)
     }
     return {
       title: '自定义转发标题',
       path: '/pages/room/room?roomId=' + this.data.roomId,
       imageUrl: '自定义图片地址'
+    }
+  },
+
+  watch: {
+    CreateRoomReq(val: CreateRoomReq) {
+      console.log('CreateRoomReq变化了，变化后的值是', val)
+      // 准备对Coating文件进行修改
     }
   },
 
@@ -84,5 +99,9 @@ Page({
 
   // 卸载页面时候，离开房间
   leaveRoom: async function() { await stockioClient?.sendReq({ kind: "LeaveRoomReq" }) },
+
+  onPersonalCardClicked: function() { this.setData({ cardStatus: 'personal' }) },
+
+  onTeamCardClicked: function() { this.setData({ cardStatus: 'team' }) },
 
 })

@@ -1,0 +1,21 @@
+<view class="team-card-container">
+  <view class="card-main">
+    <view class="user-avatar" wx:for="{{ teamPlayerList }}" wx:key="index" wx:for-item="item">
+      <view class="avatar-view">
+        <image class="avatar-img" src="{{ item.avatarUrl }}"></image>
+      </view>
+      <view>
+        <view class="name-view">
+          <view>{{ item.name }}</view>
+        </view>
+        <view class="level-view">
+          <view class="level-image-view">
+            <image class="level-img" src="{{ item.levelUrl }}"></image>
+          </view>
+          <view class="level-name">{{ item.level }}</view>
+        </view>
+      </view>
+    </view>
+    
+  </view>
+</view>

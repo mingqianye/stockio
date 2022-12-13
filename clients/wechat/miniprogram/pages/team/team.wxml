@@ -1,15 +1,31 @@
 <!--pages/team/team.wxml-->
-<view class="container">
-  <view class="team-title">多人排位</view>
-  <view class="team-main">
-    <view class="user-avater">
-      <open-data type="userAvatarUrl"></open-data>
+<view class="team-container">
+  <view class="team-card">
+    <roomPersonalCard wx:if="{{ cardStatus=='personal' }}" personalCard="{{ personalCard }}"></roomPersonalCard>
+    <roomTeamCard wx:if="{{ cardStatus=='team' }}" teamPlayerList="{{ teamPlayerList }}"></roomTeamCard>
+    <view wx:if="{{ cardStatus!='personal' }}" class="left-tab" bindtap="onPersonalCardClicked">
+      <image class="left-tab-img" src="../../resources/images/public/right-arraw.png"></image>
     </view>
-    <view class="user-name">
-      <open-data type="userNickName"></open-data>
+    <view wx:if="{{ cardStatus!='team' }}" class="right-tab" bindtap="onTeamCardClicked">
+      <image class="right-tab-img" src="../../resources/images/public/left-arraw.png"></image>
     </view>
   </view>
-  <div class="team-footer">
-    <view class="team-btn" bindtap="onRoom">开始匹配</view>
-  </div>
+
+  <!-- 聊天记录 -->
+  <view class="team-chat"></view>
+
+  <!-- 广告 -->
+  <view class="ad-view">广告</view>
+
+  <view class="start">开始对战</view>
+</view>
+
+<view class="footer">
+  <view class="footer-first-line" wx:if="{{ roomRole=='master' }}">
+    <roomSetting roomId="{{ roomId }}"></roomSetting>
+  </view>
+  <view class="footer-second-line">
+    <chat class="chat"></chat>
+    <roomShareApp></roomShareApp>
+  </view>
 </view>

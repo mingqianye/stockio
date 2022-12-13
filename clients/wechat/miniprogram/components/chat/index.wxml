@@ -1,0 +1,4 @@
+<view class="chat-container">
+  <view class="simple-content"></view>
+  <view class="botton">发送</view>
+</view>
