@@ -1,7 +1,7 @@
 import IAppOption from "../../interface/IAppOption";
 import { PongRes, RoomDetailRes, TickRes } from '../../client/shared/protocols/MsgServerToClient';
 import { StockioClient } from "../../client/shared/clientCore";
-import { _personalCard, _teamPlayerList } from './teamCoating'
+import { _personalCard, _teamPlayerList } from './rankedCoating'
 
 const app = getApp<IAppOption>()
 let stockioClient: StockioClient

@@ -23,8 +23,6 @@ Page({
     // 渲染层
     personalCard: {},
     playerList: {},
-    // 一般动画
-    cardStatus: 'personal',
   },
 
   onLoad: async function(options) {
@@ -99,9 +97,5 @@ Page({
 
   // 卸载页面时候，离开房间
   leaveRoom: async function() { await stockioClient?.sendReq({ kind: "LeaveRoomReq" }) },
-
-  onPersonalCardClicked: function() { this.setData({ cardStatus: 'personal' }) },
-
-  onTeamCardClicked: function() { this.setData({ cardStatus: 'team' }) },
 
 })

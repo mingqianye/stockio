@@ -1,0 +1,11 @@
+<!-- 个人信息卡片 -->
+<view class="player-personal-card">
+  <matchPersonalCard wx:if="{{ cardStatus=='personal' }}" personalCard="{{ personalCard }}"></matchPersonalCard>
+  <matchTeamCard wx:if="{{ cardStatus=='team' }}" teamPlayerList="{{ teamPlayerList }}"></matchTeamCard>
+  <view wx:if="{{ cardStatus!='personal' }}" class="left-tab" bindtap="onSlideArrawBtnClicked">
+    <image class="left-tab-img" src="../../../resources/images/public/right-arraw.png"></image>
+  </view>
+  <view wx:if="{{ cardStatus!='team' }}" class="right-tab" bindtap="onSlideArrawBtnClicked">
+    <image class="right-tab-img" src="../../../resources/images/public/left-arraw.png"></image>
+  </view>
+</view>

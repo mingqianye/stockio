@@ -2,7 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/account/account",
-    "pages/team/team",
+    "pages/ranked/ranked",
     "pages/queue/queue",
     "pages/room/room",
     "pages/tick/tick"
@@ -10,8 +10,9 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "",
-    "navigationBarTextStyle": "black"
+    "navigationBarTitleText": "大白鱼",
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom"
   },
   "sitemapLocation": "sitemap.json"
 }

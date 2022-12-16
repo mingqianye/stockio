@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "matchPersonalCard": "../../publicComponents/matchPersonalCard/index",
+    "matchTeamCard": "../../publicComponents/matchTeamCard/index"
+  }
+}

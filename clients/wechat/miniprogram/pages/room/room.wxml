@@ -1,16 +1,8 @@
 <view class="room-container">
+  <navbar title="房间对战" extClass="nav-wrap-extclass" home ></navbar>
 
-  <!-- 个人信息卡片 -->
-  <view class="room-personal-card">
-    <roomPersonalCard wx:if="{{ cardStatus=='personal' }}" personalCard="{{ personalCard }}"></roomPersonalCard>
-    <roomTeamCard wx:if="{{ cardStatus=='team' }}" teamPlayerList="{{ teamPlayerList }}"></roomTeamCard>
-    <view wx:if="{{ cardStatus!='personal' }}" class="left-tab" bindtap="onPersonalCardClicked">
-      <image class="left-tab-img" src="../../resources/images/public/right-arraw.png"></image>
-    </view>
-    <view wx:if="{{ cardStatus!='team' }}" class="right-tab" bindtap="onTeamCardClicked">
-      <image class="right-tab-img" src="../../resources/images/public/left-arraw.png"></image>
-    </view>
-  </view>
+  <!-- 玩家信息卡片 -->
+  <playersCard personalCard="{{ personalCard }}" teamPlayerList="{{ teamPlayerList }}" ></playersCard>
   
   <!-- 玩家列表 -->
   <view class="room-player-list">
@@ -25,7 +17,7 @@
   </view>
   <view class="footer-second-line">
     <chat class="chat"></chat>
-    <roomShareApp></roomShareApp>
+    <matchShareApp></matchShareApp>
   </view>
 </view>
 

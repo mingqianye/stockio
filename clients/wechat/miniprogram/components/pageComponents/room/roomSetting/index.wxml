@@ -1,6 +1,6 @@
 <view class="room-setting-container">
   <view class="room-setting-btn" bindtap="onRoomSettingShow">房间设置</view>
-  <view class="room-start">开始游戏</view>
+  <view class="room-start" bindtap="onStartGameClicked">开始游戏</view>
 </view>
 
 <van-overlay show="{{ roomSettingShow }}" bind:click="onRoomSettingHide">

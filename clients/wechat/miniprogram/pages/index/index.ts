@@ -7,7 +7,7 @@ Page({
   onShow: function() {},
 
   // 点击匹配赛
-  onTeamClicked: function() { wx.navigateTo({ url: '../team/team' }) },
+  onTeamClicked: function() { wx.navigateTo({ url: '../ranked/ranked' }) },
 
   // 点击创建房间
   onCreateRoomClicked: function() { wx.navigateTo({ url: '../room/room' }) },

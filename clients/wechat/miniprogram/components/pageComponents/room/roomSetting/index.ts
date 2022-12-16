@@ -17,6 +17,10 @@ Component({
     // 隐藏设置图层
     onRoomSettingHide: function() { this.setData({ roomSettingShow: false }) },
 
-    bindInput: function(e) { this.setData({ passwordInput: e.detail.value }) }
+    // 开始游戏按钮
+    onStartGameClicked: function() { wx.redirectTo({ url: '../../pages/queue/queue' }) },
+
+    bindInput: function(e) { this.setData({ passwordInput: e.detail.value }) },
+    
   }
 })

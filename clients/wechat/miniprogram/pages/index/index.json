@@ -1,6 +1,6 @@
 {
   "usingComponents": {
-    "joinRoomContent": "../../components/joinRoomContent/index"
+    "joinRoomContent": "../../components/pageComponents/index/joinRoomContent/index"
   },
   "backgroundColor": "#F6F6F6",
   "navigationBarBackgroundColor": "#fff",

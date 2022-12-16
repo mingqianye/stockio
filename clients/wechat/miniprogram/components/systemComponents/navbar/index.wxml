@@ -1,0 +1,31 @@
+<!-- interface/components/systemComponents/navbar/navbar.wxml -->
+<view>
+  <view class="{{ extClass }} navbar-wrap">
+    <view class="navbar-status" style="height:{{ statusBarHeight }}px"></view>
+    <view class="navbar-content">
+      <view style="position:absolute;top:0;left:0;z-index:-1">
+        <slot name="bg"></slot>
+      </view>
+
+      <view class="navbar-content-left">
+        <block wx:if="{{ home }}">
+          <image bindtap="goHome" class="navbar-content-left-back" src="../../../resources/images/public/home.png"></image>
+        </block>
+        <block wx:if="{{ back }}">
+          <image bindtap="goBack" class="navbar-content-left-back" src="../../../resources/images/public/left-arraw.png"></image>
+        </block>
+        <block wx:else>
+          <slot name="left"></slot>
+        </block>
+      </view>
+
+      <block wx:if="{{ title }}">
+        <text class="navbar-content-center">{{ title }}</text>
+      </block>
+      <block wx:else>
+        <slot name="center"></slot>
+      </block>
+    </view>
+  </view>
+  <view class="navbar-placeholder" style="min-height:{{statusBarHeight+44}}px;"></view>
+</view>

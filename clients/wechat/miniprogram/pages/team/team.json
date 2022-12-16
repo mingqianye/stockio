@@ -1,9 +1,0 @@
-{
-  "usingComponents": {
-    "roomPersonalCard": "../../components/roomPersonalCard/index",
-    "roomTeamCard": "../../components/roomTeamCard/index",
-    "chat": "../../components/chat/index",
-    "roomShareApp": "../../components/roomShareApp/index"
-  },
-  "navigationBarTitleText": "房间对战"
-}

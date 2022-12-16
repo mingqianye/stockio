@@ -14,10 +14,11 @@ Component({
   },
 
   data: {
-    listHeight: app.globalData.systemInfo.windowHeight-(720*app.globalData.systemInfo.windowWidth/750)-app.globalData.systemInfo.statusBarHeight-navBarHeight
+    listHeight: app.globalData.systemInfo.windowHeight-(720*app.globalData.systemInfo.windowWidth/750)-(app.globalData.systemInfo.statusBarHeight+navBarHeight)*2
   },
 
   methods: {
-
+    // 离开按钮
+    onPlayerLeaveClicked: function() { console.log(app.globalData.systemInfo.statusBarHeight) },
   }
 })

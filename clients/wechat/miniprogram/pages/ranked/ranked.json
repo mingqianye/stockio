@@ -2,10 +2,10 @@
   "usingComponents": {
     "navbar": "../../components/systemComponents/navbar/index",
     "playersCard": "../../components/publicComponents/playersCard/index",
-    "roomPlayerList": "../../components/pageComponents/room/roomPlayerList/index",
-    "chat": "../../components/publicComponents/chat/index",
+    "matchPersonalCard": "../../components/publicComponents/matchPersonalCard/index",
+    "matchTeamCard": "../../components/publicComponents/matchTeamCard/index",
     "matchShareApp": "../../components/publicComponents/matchShareApp/index",
-    "roomSetting": "../../components/pageComponents/room/roomSetting/index"
+    "chat": "../../components/publicComponents/chat/index"
   },
   "navigationBarTitleText": "房间对战"
 }

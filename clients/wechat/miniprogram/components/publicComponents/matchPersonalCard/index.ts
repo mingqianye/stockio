@@ -1,4 +1,4 @@
-import * as echarts from '../../ec-canvas/echarts.js'
+import * as echarts from '../../../ec-canvas/echarts.js'
 
 const app = getApp();
 
@@ -71,9 +71,7 @@ function initChart(canvas, width, height, dpr) {
 Component({
 
   properties: {
-    personalCard: {
-      type: Object
-    }
+    personalCard: Object,
   },
 
   data: {

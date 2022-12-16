@@ -2,12 +2,12 @@
   <view class="main">
     <!-- 匹配赛 -->
     <view class="row1">
-      <view class="btn match" bindtap="onTeamClicked">
+      <view class="btn ranked" bindtap="onTeamClicked">
         <view>
           <view class="btnImg">
             <image src="../../resources/images/index/stock.png" mode="aspectFit"></image>
           </view>
-          <text>匹配赛</text>
+          <text>排位赛</text>
         </view>
       </view>
     </view>

@@ -1,0 +1,22 @@
+<!--pages/ranked/ranked.wxml-->
+<view class="ranked-container">
+  <navbar title="排位赛" extClass="nav-wrap-extclass" home ></navbar>
+
+  <!-- 玩家信息卡片 -->
+  <playersCard personalCard="{{ personalCard }}" teamPlayerList="{{ teamPlayerList }}" ></playersCard>
+
+  <!-- 聊天记录 -->
+  <view class="ranked-chat"></view>
+
+  <!-- 广告 -->
+  <view class="ad-view">广告</view>
+
+  <view class="start">开始对战</view>
+</view>
+
+<view class="footer">
+  <view class="footer-second-line">
+    <chat class="chat"></chat>
+    <matchShareApp></matchShareApp>
+  </view>
+</view>

@@ -5,7 +5,7 @@
 <view class="share-container">
   <button class="share-app-btn" data-name="room" open-type="share" bindtap="onPopupClosed">邀朋友对战</button>
   <view class="arraw-choose" bindtap="onChooseClicked">
-    <image class="arraw-choose-img" src="../../resources/images/public/arraw.png"></image>
+    <image class="arraw-choose-img" src="../../../resources/images/public/arraw.png"></image>
   </view>
 </view>
 
