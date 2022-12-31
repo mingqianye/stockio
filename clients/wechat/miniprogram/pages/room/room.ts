@@ -25,18 +25,13 @@ Page({
     playerList: {},
   },
 
-  onLoad: async function(options) {
-    setWatcher(this)
+  onLoad: async function(options: any) {
+    stockioClient = app.globalData.stockioClient
     if(options.roomId) {
-      app.pageCallback = async () => {
-        stockioClient = app.globalData.stockioClient
-        await this.enterRoom(options.roomId)
-      }
+      await this.enterRoom(options.roomId)
     } else {
-      stockioClient = app.globalData.stockioClient
       await this.createRoom()
     }
-    console.log(app.globalData.systemInfo)
   },
 
   onShow: function() { 

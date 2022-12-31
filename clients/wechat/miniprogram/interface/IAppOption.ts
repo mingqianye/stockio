@@ -1,25 +1,35 @@
 // IAppOption.ts
 import { StockioClient } from "../client/shared/clientCore";
 
+type userSituation = {
+  // pageRoot: string,
+  roomId: string,
+  teamId: string,
+  gameId: string,
+}
+
 export default interface IAppOption {
   globalData: {
     systemInfo?: WechatMiniprogram.GetSystemInfoSuccessCallbackResult,
     stockioClient?: StockioClient,
     userInfo: string,
     connection: boolean | undefined,
+    userSituation: userSituation,
   }
 
-  eventQueue?: Array<any> | undefined 
+  watch(variate: any, method: any): void
+
+  // eventQueue?: Array<any> | undefined 
 
   pageCallback?(fn: any): void
 
-  observeGlobalData(): void
+  // observeGlobalData(): void
 
-  observe(obj: any, key: PropertyKey): void
+  // observe(obj: any, key: PropertyKey): void
 
-  emitWatch(obj: any, key: PropertyKey, value: any): void
+  // emitWatch(obj: any, key: PropertyKey, value: any): void
 
-  onWatch(content: any): void
+  // onWatch(content: any): void
 
-  offWatch(content: any): void
+  // offWatch(content: any): void
 }

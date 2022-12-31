@@ -1,10 +1,5 @@
-import IAppOption from "../../interface/IAppOption"
+import IAppOption from "../../../../interface/IAppOption"
 const app = getApp<IAppOption>()
-
-const { statusBarHeight } = wx.getSystemInfoSync();
-const menuButtonObject = wx.getMenuButtonBoundingClientRect();
-const { top, height } = menuButtonObject;
-const navBarHeight = height + (top - statusBarHeight) * 2;
 
 Component({
 
@@ -14,7 +9,7 @@ Component({
   },
 
   data: {
-    listHeight: app.globalData.systemInfo.windowHeight-(720*app.globalData.systemInfo.windowWidth/750)-(app.globalData.systemInfo.statusBarHeight+navBarHeight)*2
+    listHeight: app.globalData.systemInfo.windowHeight-(720*app.globalData.systemInfo.windowWidth/750)-(app.globalData.systemInfo.statusBarHeight+44)*2
   },
 
   methods: {
